@@ -1,0 +1,22 @@
+{
+  "name": "orangehrm-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cucumber and Playwright automation framework for OrangeHRM (Login -> PIM > Add Employee).",
+  "scripts": {
+    "test": "cucumber-js",
+    "test:smoke": "cucumber-js --tags @smoke",
+    "test:login": "cucumber-js --tags @login",
+    "test:dry": "cucumber-js --dry-run",
+    "typecheck": "tsc --noEmit",
+    "install:browsers": "playwright install chromium firefox webkit"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^13.3.0",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.4",
+    "dotenv": "^18.0.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,35 @@
+name: Cucumber and Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: https://opensource-demo.orangehrmlive.com
+      BROWSER: chromium
+      HEADLESS: 'true'
+      # Khai báo trong Settings > Secrets and variables > Actions của repo
+      ORANGEHRM_USERNAME: ${{ secrets.ORANGEHRM_USERNAME }}
+      ORANGEHRM_PASSWORD: ${{ secrets.ORANGEHRM_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Cucumber scenarios
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: cucumber-report
+          path: test-results/cucumber-report.html
+          retention-days: 30
