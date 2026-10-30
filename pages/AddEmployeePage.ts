@@ -3,13 +3,226 @@ import { expect, type Page } from '@playwright/test';
 export class AddEmployeePage {
     constructor(private readonly page: Page) {}
 
+    // ---------- Locator ----------
+
+    heading() {
+        return this.page.getByRole('heading', { name: 'Add Employee' });
+    }
+
+    firstNameInput() {
+        return this.page.getByRole('textbox', { name: 'First Name' });
+    }
+
+    middleNameInput() {
+        return this.page.getByRole('textbox', { name: 'Middle Name' });
+    }
+
+    lastNameInput() {
+        return this.page.getByRole('textbox', { name: 'Last Name' });
+    }
+
+    // Label Employee Id, Username, Password, Confirm Password không gắn với ô nhập nên không dùng getByLabel được.
+    // Cách lấy: tìm khung field (.oxd-input-group) có label đó, rồi lấy ô input bên trong.
+    private fieldBox(label: string) {
+        return this.page.locator('.oxd-input-group').filter({ has: this.page.getByText(label, { exact: true }) });
+    }
+
+    employeeIdInput() {
+        return this.fieldBox('Employee Id').locator('input');
+    }
+
+    createLoginDetailsCheckbox() {
+        return this.page.getByRole('checkbox');
+    }
+
+    // Ô checkbox bị ẩn, phải bấm vào nút gạt bao ngoài nó.
+    createLoginDetailsSwitch() {
+        return this.page.locator('label').filter({ has: this.createLoginDetailsCheckbox() });
+    }
+
+    usernameInput() {
+        return this.fieldBox('Username').locator('input');
+    }
+
+    statusRadio(status: string) {
+        return this.page.getByRole('radio', { name: status });
+    }
+
+    passwordInput() {
+        return this.fieldBox('Password').locator('input');
+    }
+
+    confirmPasswordInput() {
+        return this.fieldBox('Confirm Password').locator('input');
+    }
+
+    saveButton() {
+        return this.page.getByRole('button', { name: 'Save' });
+    }
+
+    cancelButton() {
+        return this.page.getByRole('button', { name: 'Cancel' });
+    }
+
+    successToast() {
+        return this.page.getByText('Successfully Saved', { exact: true });
+    }
+
+    private isNameField(fieldName: string) {
+        return fieldName === 'First Name' || fieldName === 'Middle Name' || fieldName === 'Last Name';
+    }
+
+    // Ô nhập theo tên field trên màn hình, ví dụ 'First Name', 'Employee Id', 'Password'.
+    fieldInput(fieldName: string) {
+        if (this.isNameField(fieldName)) {
+            return this.page.getByRole('textbox', { name: fieldName });
+        }
+        return this.fieldBox(fieldName).locator('input');
+    }
+
+    // Dòng lỗi màu đỏ dưới field.
+    fieldError(fieldName: string) {
+        if (this.isNameField(fieldName)) {
+            // 3 ô tên nằm chung khung "Employee Full Name", .last() để lấy khung nhỏ của riêng ô đó
+            return this.page.locator('.oxd-input-group')
+                .filter({ has: this.page.getByRole('textbox', { name: fieldName }) })
+                .last()
+                .locator('.oxd-input-field-error-message');
+        }
+        return this.fieldBox(fieldName).locator('.oxd-input-field-error-message');
+    }
+
+    // ---------- Thao tác ----------
+
+    // Cần baseURL = https://opensource-demo.orangehrmlive.com và đã đăng nhập.
+    async open() {
+        await this.page.goto('/web/index.php/pim/addEmployee');
+        await this.expectVisible();
+    }
+
+    // Mở Add Employee từ menu PIM (dùng trong steps/employee.steps.ts).
     async openFromPimMenu() {
         await this.page.getByRole('link', { name: 'Add Employee' }).click();
     }
 
+    async enterFirstName(firstName: string) {
+        await this.firstNameInput().fill(firstName);
+    }
+
+    async enterMiddleName(middleName: string) {
+        await this.middleNameInput().fill(middleName);
+    }
+
+    async enterLastName(lastName: string) {
+        await this.lastNameInput().fill(lastName);
+    }
+
+    // fill() tự xóa Employee Id gợi ý trước khi nhập.
+    async enterEmployeeId(employeeId: string) {
+        await this.employeeIdInput().fill(employeeId);
+    }
+
+    async getEmployeeId() {
+        await expect(this.employeeIdInput()).not.toHaveValue('');
+        return this.employeeIdInput().inputValue();
+    }
+
+    async turnOnCreateLoginDetails() {
+        if (!(await this.createLoginDetailsCheckbox().isChecked())) {
+            await this.createLoginDetailsSwitch().click();
+        }
+        await expect(this.usernameInput()).toBeVisible();
+    }
+
+    async turnOffCreateLoginDetails() {
+        if (await this.createLoginDetailsCheckbox().isChecked()) {
+            await this.createLoginDetailsSwitch().click();
+        }
+        await expect(this.usernameInput()).toBeHidden();
+    }
+
+    async enterUsername(username: string) {
+        await this.usernameInput().fill(username);
+    }
+
+    // status: 'Enabled' hoặc 'Disabled'
+    async selectStatus(status: string) {
+        await this.page.locator('label').filter({ has: this.statusRadio(status) }).click();
+        await expect(this.statusRadio(status)).toBeChecked();
+    }
+
+    async enterPassword(password: string) {
+        await this.passwordInput().fill(password);
+    }
+
+    async enterConfirmPassword(confirmPassword: string) {
+        await this.confirmPasswordInput().fill(confirmPassword);
+    }
+
+    async clickSave() {
+        await this.saveButton().click();
+    }
+
+    async clickCancel() {
+        await this.cancelButton().click();
+    }
+
+    // Nhận bảng data từ feature. Cột nào không có hoặc để trống thì bỏ qua ô đó.
+    // Tên cột: First Name, Middle Name, Last Name, Employee Id
+    async enterEmployeeDetails(details: Record<string, string>) {
+        if (details['First Name']) await this.enterFirstName(details['First Name']);
+        if (details['Middle Name']) await this.enterMiddleName(details['Middle Name']);
+        if (details['Last Name']) await this.enterLastName(details['Last Name']);
+        if (details['Employee Id']) await this.enterEmployeeId(details['Employee Id']);
+    }
+
+    // Bật Create Login Details rồi nhập phần login.
+    // Tên cột: Username, Status, Password, Confirm Password
+    async enterLoginDetails(details: Record<string, string>) {
+        await this.turnOnCreateLoginDetails();
+        await this.enterUsername(details['Username']);
+        if (details['Status']) await this.selectStatus(details['Status']);
+        await this.enterPassword(details['Password']);
+        await this.enterConfirmPassword(details['Confirm Password']);
+    }
+
+    // ---------- Xác nhận ----------
+
     async expectVisible() {
-        await expect(this.page).toHaveURL(/\/pim\/addEmployee/);
-        await expect(this.page.getByRole('heading', { name: 'Add Employee' })).toBeVisible();
-        await expect(this.page.getByPlaceholder('First Name')).toBeVisible();
+        await expect(this.page).toHaveURL(/\/pim\/addEmployee$/);
+        await expect(this.heading()).toBeVisible();
+        await expect(this.firstNameInput()).toBeVisible();
+    }
+
+    // Field hiện đúng thông báo lỗi và có viền đỏ.
+    async expectFieldError(fieldName: string, message: string) {
+        await expect(this.fieldError(fieldName)).toHaveText(message);
+        await expect(this.fieldInput(fieldName)).toHaveClass(/oxd-input--error/);
+    }
+
+    // Không lưu: vẫn ở màn Add Employee, không có toast thành công.
+    async expectNotSaved() {
+        await expect(this.page).toHaveURL(/\/pim\/addEmployee$/);
+        await expect(this.successToast()).toHaveCount(0);
+    }
+
+    // Toast tự ẩn sau vài giây nên gọi ngay sau clickSave().
+    async expectSuccessToast() {
+        await expect(this.successToast()).toBeVisible();
+    }
+
+    // Lưu thành công thì chuyển sang trang Personal Details.
+    async expectSaved() {
+        await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/, { timeout: 15000 });
+    }
+
+    // Trang Personal Details dùng lại các ô cùng tên nên kiểm tra được bằng locator của trang này.
+    async expectSavedEmployee(firstName: string, middleName: string, lastName: string, employeeId: string) {
+        await this.expectSaved();
+        await expect(this.page.getByRole('heading', { name: firstName + ' ' + lastName, exact: true })).toBeVisible();
+        await expect(this.firstNameInput()).toHaveValue(firstName);
+        await expect(this.middleNameInput()).toHaveValue(middleName);
+        await expect(this.lastNameInput()).toHaveValue(lastName);
+        await expect(this.employeeIdInput()).toHaveValue(employeeId);
     }
 }
