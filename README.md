@@ -71,3 +71,25 @@ Mở báo cáo sau khi chạy:
 4. Viết step trong `steps/` với tên file dạng `*.steps.ts`.
 5. Thêm lệnh chạy riêng trong `package.json` nếu cần, ví dụ:
    `"test:add-employee": "cucumber-js --tags @addEmployee"`.
+
+## Các kịch bản Add Employee
+
+Các test case manual được tự động hóa trong feature hiện tại:
+
+- `AE_P01`: tạo nhân viên với Employee Id hệ thống gợi ý.
+- `AE_N01`: kiểm tra First Name và Last Name bắt buộc.
+- `AE_N04`: từ chối Employee Id trùng. Scenario tự tạo nhân viên nền bằng màn Add Employee rồi thử lưu nhân viên thứ hai với cùng Id; không dùng Employee List.
+- `AE_P03`: tạo nhân viên khi bật Create Login Details rồi xác nhận tài khoản mới đăng nhập được.
+
+Mỗi lần chạy sẽ tạo nhân viên trên demo; `AE_P03` còn tạo tài khoản đăng nhập. Demo có thể giữ lại hoặc reset dữ liệu. Dùng tài khoản có quyền PIM và không commit file `.env`.
+
+Chạy toàn bộ scenario Add Employee đã chọn:
+
+    npm run test:add-employee
+
+Chạy riêng từng case:
+
+    npm run test:ae-p01
+    npm run test:ae-n01
+    npm run test:ae-n04
+    npm run test:ae-p03

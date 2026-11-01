@@ -4,12 +4,22 @@ import { AddEmployeePage } from '../pages/AddEmployeePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { LoginPage } from '../pages/LoginPage';
 
+export interface EmployeeRecord {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    employeeId: string;
+}
+
 export class CustomWorld extends World {
     context!: BrowserContext;
     page!: Page;
     loginPage!: LoginPage;
     dashboardPage!: DashboardPage;
     addEmployeePage!: AddEmployeePage;
+    employeeUnderTest?: EmployeeRecord;
+    duplicateEmployeeId?: string;
+    createdLoginDetails?: { username: string; password: string };
 
     initializePages(page: Page) {
         this.page = page;
