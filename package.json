@@ -11,10 +11,10 @@
     "typecheck": "tsc --noEmit",
     "install:browsers": "playwright install chromium firefox webkit",
     "test:add-employee": "cucumber-js --tags \"@addEmployee\"",
-    "test:ae-p01": "cucumber-js --tags \"@AE_P01\"",
-    "test:ae-n01": "cucumber-js --tags \"@AE_N01\"",
-    "test:ae-n04": "cucumber-js --tags \"@AE_N04\"",
-    "test:ae-p03": "cucumber-js --tags \"@AE_P03\""
+    "test:validation": "cucumber-js --tags \"@validation\"",
+    "test:employee-id": "cucumber-js --tags \"@employee-id\"",
+    "test:login-details": "cucumber-js --tags \"@login-details\"",
+    "test:photo": "cucumber-js --tags \"@photo\""
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

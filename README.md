@@ -74,22 +74,30 @@ Mở báo cáo sau khi chạy:
 
 ## Các kịch bản Add Employee
 
-Các test case manual được tự động hóa trong feature hiện tại:
+Mỗi test case có tag riêng theo ID (`@AE_P01`, `@AE_N02`...). Các test case cùng dạng được gom thành Scenario Outline, mỗi khối `Examples` là một test case và mang tag của test case đó.
 
-- `AE_P01`: tạo nhân viên với Employee Id hệ thống gợi ý.
-- `AE_N01`: kiểm tra First Name và Last Name bắt buộc.
-- `AE_N04`: từ chối Employee Id trùng. Scenario tự tạo nhân viên nền bằng màn Add Employee rồi thử lưu nhân viên thứ hai với cùng Id; không dùng Employee List.
-- `AE_P03`: tạo nhân viên khi bật Create Login Details rồi xác nhận tài khoản mới đăng nhập được.
+| Nhóm | Tag nhóm | Test case | File |
+| --- | --- | --- | --- |
+| Tạo nhân viên với Id gợi ý | `@smoke` | AE_P01 | add-employee.feature |
+| Validation tên, Employee Id | `@validation` | AE_N01, AE_N02, AE_N03, AE_N04, AE_N05, AE_B06, AE_B08 | add-employee.feature |
+| Employee Id | `@employee-id` | AE_P06, AE_P07, AE_P08, AE_B07 | add-employee.feature |
+| Create Login Details | `@login-details` | AE_P09, AE_P10, AE_B09, AE_L02 | add-employee.feature |
+| Ảnh đại diện | `@photo` | AE_N06, AE_N07 | add-employee.feature |
+| Chưa đăng nhập mở Add Employee | `@addEmployee` | AE_L01 | login.feature |
 
-Mỗi lần chạy sẽ tạo nhân viên trên demo; `AE_P03` còn tạo tài khoản đăng nhập. Demo có thể giữ lại hoặc reset dữ liệu. Dùng tài khoản có quyền PIM và không commit file `.env`.
+Dữ liệu test cố định, lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (xoá bản ghi trùng qua API của OrangeHRM, xem `support/testData.ts`). File ảnh dùng cho AE_N06, AE_N07 nằm trong `test-data/photos/`.
 
-Chạy toàn bộ scenario Add Employee đã chọn:
+Chạy toàn bộ Add Employee:
 
     npm run test:add-employee
 
-Chạy riêng từng case:
+Chạy theo nhóm:
 
-    npm run test:ae-p01
-    npm run test:ae-n01
-    npm run test:ae-n04
-    npm run test:ae-p03
+    npm run test:validation
+    npm run test:employee-id
+    npm run test:login-details
+    npm run test:photo
+
+Chạy riêng một test case:
+
+    npx cucumber-js --tags "@AE_N02"

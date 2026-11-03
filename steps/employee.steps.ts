@@ -1,4 +1,5 @@
 import { Given, Then, When } from '@cucumber/cucumber';
+import { expect } from '@playwright/test';
 import { config } from '../support/config';
 import { CustomWorld } from '../support/world';
 
@@ -19,4 +20,19 @@ When('I open PIM > Add Employee', async function (this: CustomWorld) {
 
 Then('the Add Employee page is visible', async function (this: CustomWorld) {
     await this.addEmployeePage.expectVisible();
+});
+
+// ---------- Chưa đăng nhập (AE_L01) ----------
+
+When('I open the Add Employee page URL without signing in', async function (this: CustomWorld) {
+    await this.addEmployeePage.openUrl();
+});
+
+Then('the OrangeHRM login page is shown', async function (this: CustomWorld) {
+    await expect(this.page).toHaveURL(/\/auth\/login$/);
+    await this.loginPage.expectVisible();
+});
+
+Then('the Add Employee form is not shown', async function (this: CustomWorld) {
+    await this.addEmployeePage.expectFormHidden();
 });

@@ -23,3 +23,9 @@ Feature: Login and open Add Employee
   Scenario: Shared precondition reaches the Add Employee page
     Given I am logged in and on the Add Employee page
     Then the Add Employee page is visible
+
+  @addEmployee @AE_L01
+  Scenario: Redirect to Login when opening Add Employee without signing in
+    When I open the Add Employee page URL without signing in
+    Then the OrangeHRM login page is shown
+    And the Add Employee form is not shown

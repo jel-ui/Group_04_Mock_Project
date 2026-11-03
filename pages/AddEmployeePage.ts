@@ -1,3 +1,4 @@
+import path from 'path';
 import { expect, type Page } from '@playwright/test';
 
 export class AddEmployeePage {
@@ -68,6 +69,18 @@ export class AddEmployeePage {
         return this.page.getByText('Successfully Saved', { exact: true });
     }
 
+    // Ô chọn file ảnh bị ẩn sau nút +, setInputFiles() vẫn dùng được.
+    photoInput() {
+        return this.page.locator('input[type="file"]');
+    }
+
+    // Dòng lỗi đỏ dưới khung ảnh đại diện.
+    photoError() {
+        return this.page.locator('.oxd-input-group')
+            .filter({ has: this.photoInput() })
+            .locator('.oxd-input-field-error-message');
+    }
+
     private isNameField(fieldName: string) {
         return fieldName === 'First Name' || fieldName === 'Middle Name' || fieldName === 'Last Name';
     }
@@ -98,6 +111,11 @@ export class AddEmployeePage {
     async open() {
         await this.page.goto('/web/index.php/pim/addEmployee');
         await this.expectVisible();
+    }
+
+    // Chỉ mở URL, không kiểm tra form (dùng khi chưa đăng nhập, AE_L01).
+    async openUrl() {
+        await this.page.goto('/web/index.php/pim/addEmployee');
     }
 
     // Mở Add Employee từ menu PIM (dùng trong steps/employee.steps.ts).
@@ -167,6 +185,11 @@ export class AddEmployeePage {
         await this.cancelButton().click();
     }
 
+    // fileName là tên file trong thư mục test-data/photos, ví dụ 'F06_document.pdf'.
+    async uploadPhoto(fileName: string) {
+        await this.photoInput().setInputFiles(path.join(process.cwd(), 'test-data', 'photos', fileName));
+    }
+
     // Nhận bảng data từ feature. Cột nào không có hoặc để trống thì bỏ qua ô đó.
     // Tên cột: First Name, Middle Name, Last Name, Employee Id
     async enterEmployeeDetails(details: Record<string, string>) {
@@ -189,15 +212,26 @@ export class AddEmployeePage {
     // ---------- Xác nhận ----------
 
     async expectVisible() {
-        await expect(this.page).toHaveURL(/\/pim\/addEmployee$/);
-        await expect(this.heading()).toBeVisible();
+        await expect(this.page).toHaveURL(/\/pim\/addEmployee$/, { timeout: 30000 });
+        await expect(this.heading()).toBeVisible({ timeout: 30000 });
         await expect(this.firstNameInput()).toBeVisible();
     }
 
     // Field hiện đúng thông báo lỗi và có viền đỏ.
     async expectFieldError(fieldName: string, message: string) {
-        await expect(this.fieldError(fieldName)).toHaveText(message);
+        // Lỗi "Employee Id already exists" phải chờ server kiểm tra nên cho thời gian chờ dài hơn.
+        await expect(this.fieldError(fieldName)).toHaveText(message, { timeout: 15000 });
         await expect(this.fieldInput(fieldName)).toHaveClass(/oxd-input--error/);
+    }
+
+    async expectPhotoError(message: string) {
+        await expect(this.photoError()).toHaveText(message);
+    }
+
+    // Form Add Employee không hiển thị (vd. khi chưa đăng nhập).
+    async expectFormHidden() {
+        await expect(this.heading()).toHaveCount(0);
+        await expect(this.firstNameInput()).toHaveCount(0);
     }
 
     // Không lưu: vẫn ở màn Add Employee, không có toast thành công.
@@ -212,15 +246,16 @@ export class AddEmployeePage {
     }
 
     // Lưu thành công thì chuyển sang trang Personal Details.
+    // Demo có lúc chậm (chuyển trang mất ~15s, tải xong dữ liệu ~25s) nên chờ lâu hơn mặc định.
     async expectSaved() {
-        await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/, { timeout: 15000 });
+        await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/, { timeout: 60000 });
     }
 
     // Trang Personal Details dùng lại các ô cùng tên nên kiểm tra được bằng locator của trang này.
     async expectSavedEmployee(firstName: string, middleName: string, lastName: string, employeeId: string) {
         await this.expectSaved();
-        await expect(this.page.getByRole('heading', { name: firstName + ' ' + lastName, exact: true })).toBeVisible();
-        await expect(this.firstNameInput()).toHaveValue(firstName);
+        await expect(this.page.getByRole('heading', { name: firstName + ' ' + lastName, exact: true })).toBeVisible({ timeout: 45000 });
+        await expect(this.firstNameInput()).toHaveValue(firstName, { timeout: 15000 });
         await expect(this.middleNameInput()).toHaveValue(middleName);
         await expect(this.lastNameInput()).toHaveValue(lastName);
         await expect(this.employeeIdInput()).toHaveValue(employeeId);
