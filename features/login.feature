@@ -1,6 +1,7 @@
+@login
 Feature: Login and open Add Employee
 
-  @login @smoke
+  @smoke
   Scenario: Log in with valid credentials and open the Add Employee page
     Given I open the OrangeHRM login page
     When I log in with valid credentials
@@ -8,19 +9,17 @@ Feature: Login and open Add Employee
     When I open PIM > Add Employee
     Then the Add Employee page is visible
 
-  @login
   Scenario: Log in with invalid credentials
     Given I open the OrangeHRM login page
     When I log in with username "invalid.user" and password "wrong123"
     Then the login error "Invalid credentials" is shown
 
-  @login
   Scenario: Log in with empty username and password
     Given I open the OrangeHRM login page
     When I click Login
     Then 2 required field messages are shown
 
-  @login @smoke
+  @smoke
   Scenario: Shared precondition reaches the Add Employee page
     Given I am logged in and on the Add Employee page
     Then the Add Employee page is visible
