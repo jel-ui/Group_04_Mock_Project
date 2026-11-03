@@ -49,6 +49,11 @@ export class AddEmployeePage {
         return this.page.getByRole('radio', { name: status });
     }
 
+    // Ô radio bị ẩn, nhãn bao ngoài mới là phần nhìn thấy và bấm được.
+    statusOption(status: string) {
+        return this.page.locator('label').filter({ has: this.statusRadio(status) });
+    }
+
     passwordInput() {
         return this.fieldBox('Password').locator('input');
     }
@@ -74,11 +79,35 @@ export class AddEmployeePage {
         return this.page.locator('input[type="file"]');
     }
 
+    // Khung ảnh đại diện: ảnh, nút + và ô chọn file.
+    private photoBox() {
+        return this.page.locator('.oxd-input-group').filter({ has: this.photoInput() });
+    }
+
     // Dòng lỗi đỏ dưới khung ảnh đại diện.
     photoError() {
-        return this.page.locator('.oxd-input-group')
-            .filter({ has: this.photoInput() })
-            .locator('.oxd-input-field-error-message');
+        return this.photoBox().locator('.oxd-input-field-error-message');
+    }
+
+    // Dấu * của OrangeHRM là class oxd-input-field-required trên label (CSS vẽ dấu *), không phải chữ.
+    // Ô tên: chỉ xét label của riêng ô đó, không tính label chung "Employee Full Name".
+    requiredMarker(fieldName: string) {
+        if (this.isNameField(fieldName)) {
+            return this.page.locator('.oxd-input-group')
+                .filter({ has: this.page.getByRole('textbox', { name: fieldName }) })
+                .last()
+                .locator('.oxd-input-group__label-wrapper .oxd-input-field-required');
+        }
+        return this.fieldBox(fieldName).locator('.oxd-input-field-required');
+    }
+
+    fullNameRequiredMarker() {
+        return this.page.locator('.oxd-input-field-required', { hasText: 'Employee Full Name' });
+    }
+
+    // Tiêu đề hồ sơ ở trang Personal Details sau khi lưu.
+    profileHeading(name: string) {
+        return this.page.getByRole('heading', { name, exact: true });
     }
 
     private isNameField(fieldName: string) {
@@ -165,7 +194,7 @@ export class AddEmployeePage {
 
     // status: 'Enabled' hoặc 'Disabled'
     async selectStatus(status: string) {
-        await this.page.locator('label').filter({ has: this.statusRadio(status) }).click();
+        await this.statusOption(status).click();
         await expect(this.statusRadio(status)).toBeChecked();
     }
 
@@ -224,6 +253,62 @@ export class AddEmployeePage {
         await expect(this.fieldInput(fieldName)).toHaveClass(/oxd-input--error/);
     }
 
+    // Field hiển thị trên form (Status là nhóm radio nên kiểm tra cả khung field).
+    async expectFieldShown(fieldName: string) {
+        const field = this.isNameField(fieldName) ? this.fieldInput(fieldName) : this.fieldBox(fieldName);
+        await expect(field, `Field "${fieldName}" should be shown`).toBeVisible();
+    }
+
+    async expectRequiredMarker(fieldName: string, required: boolean) {
+        if (!required) {
+            await expect(this.requiredMarker(fieldName), `Field "${fieldName}" should not show "*"`).toHaveCount(0);
+            return;
+        }
+        // Ghi rõ khác biệt với DOM để báo cáo FAIL dễ đọc (AE_U01: TC ghi First/Last có *, BA 4.2 ghi "Employee Full Name*").
+        const domNote = this.isNameField(fieldName) && (await this.fullNameRequiredMarker().count()) > 0
+            ? ' Actual DOM: "*" is only on the group label "Employee Full Name".'
+            : '';
+        await expect(this.requiredMarker(fieldName), `Field "${fieldName}" should show its own "*".${domNote}`).toHaveCount(1);
+    }
+
+    async expectFieldValue(fieldName: string, value: string) {
+        // Trang Personal Details tải dữ liệu sau khi hiện form nên cho chờ lâu hơn.
+        await expect(this.fieldInput(fieldName)).toHaveValue(value, { timeout: 15000 });
+    }
+
+    async expectPhotoPickerShown() {
+        await expect(this.photoBox().locator('img')).toBeVisible();
+        // Ô input file cũng có role button nên lấy nút + theo class.
+        await expect(this.photoBox().locator('.employee-image-action')).toBeVisible();
+    }
+
+    async expectCreateLoginDetailsOff() {
+        await expect(this.createLoginDetailsSwitch()).toBeVisible();
+        await expect(this.createLoginDetailsCheckbox()).not.toBeChecked();
+        await expect(this.usernameInput()).toBeHidden();
+    }
+
+    async expectButtonShown(name: string) {
+        await expect(this.page.getByRole('button', { name, exact: true })).toBeVisible();
+    }
+
+    async expectTextShown(text: string, exact = true) {
+        await expect(this.page.getByText(text, { exact })).toBeVisible();
+    }
+
+    async expectStatusOptionShown(status: string) {
+        await expect(this.statusOption(status)).toBeVisible();
+    }
+
+    async expectStatusSelected(status: string) {
+        await expect(this.statusRadio(status)).toBeChecked();
+    }
+
+    async expectProfileHeading(name: string) {
+        await this.expectSaved();
+        await expect(this.profileHeading(name)).toBeVisible({ timeout: 45000 });
+    }
+
     async expectPhotoError(message: string) {
         await expect(this.photoError()).toHaveText(message);
     }
@@ -254,7 +339,7 @@ export class AddEmployeePage {
     // Trang Personal Details dùng lại các ô cùng tên nên kiểm tra được bằng locator của trang này.
     async expectSavedEmployee(firstName: string, middleName: string, lastName: string, employeeId: string) {
         await this.expectSaved();
-        await expect(this.page.getByRole('heading', { name: firstName + ' ' + lastName, exact: true })).toBeVisible({ timeout: 45000 });
+        await expect(this.profileHeading(firstName + ' ' + lastName)).toBeVisible({ timeout: 45000 });
         await expect(this.firstNameInput()).toHaveValue(firstName, { timeout: 15000 });
         await expect(this.middleNameInput()).toHaveValue(middleName);
         await expect(this.lastNameInput()).toHaveValue(lastName);

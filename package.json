@@ -14,7 +14,10 @@
     "test:validation": "cucumber-js --tags \"@validation\"",
     "test:employee-id": "cucumber-js --tags \"@employee-id\"",
     "test:login-details": "cucumber-js --tags \"@login-details\"",
-    "test:photo": "cucumber-js --tags \"@photo\""
+    "test:photo": "cucumber-js --tags \"@photo\"",
+    "test:ui": "cucumber-js --tags \"@ui\"",
+    "test:positive": "cucumber-js --tags \"@positive\"",
+    "test:boundary": "cucumber-js --tags \"@boundary\""
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

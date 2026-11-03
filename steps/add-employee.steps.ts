@@ -158,3 +158,95 @@ Then('the suggested Employee Id is greater than the noted one', async function (
     expect(newEmployeeId).not.toBe(this.notedEmployeeId);
     expect(Number(newEmployeeId)).toBeGreaterThan(Number(this.notedEmployeeId));
 });
+
+// ---------- Employee Id gợi ý ----------
+
+// Dùng cho test case không ghi Employee Id: giữ Id gợi ý nhưng kiểm tra trước là Id chưa có ai dùng.
+// Demo dùng chung nên Id gợi ý có thể đã bị lấy; khi đó tải lại form để lấy Id gợi ý mới.
+const SUGGESTED_ID_ATTEMPTS = 3;
+
+Given('the suggested Employee Id is not used yet', async function (this: CustomWorld) {
+    for (let attempt = 1; attempt <= SUGGESTED_ID_ATTEMPTS; attempt++) {
+        const suggestedId = await this.addEmployeePage.getEmployeeId();
+        const existing = await findEmployeeNumbers(this.context.request, suggestedId);
+        if (existing.length === 0) return;
+        this.attach(`Suggested Employee Id ${suggestedId} is already used (attempt ${attempt}), reloading the form.`, 'text/plain');
+        await this.addEmployeePage.open();
+    }
+    throw new Error(`The suggested Employee Id was already used after ${SUGGESTED_ID_ATTEMPTS} attempts.`);
+});
+
+// ---------- Giao diện form (AE_U01 - AE_U06) ----------
+
+// Bảng: | Field | Required |, Required là yes/no.
+// Kiểm tra hết các dòng rồi mới báo lỗi, để báo cáo thấy đủ mọi field lệch với test case.
+Then('the form fields are shown:', async function (this: CustomWorld, table: DataTable) {
+    const rows = table.hashes();
+    for (const row of rows) {
+        await this.addEmployeePage.expectFieldShown(row['Field']);
+    }
+
+    const mismatches: string[] = [];
+    for (const row of rows) {
+        try {
+            await this.addEmployeePage.expectRequiredMarker(row['Field'], row['Required'] === 'yes');
+        } catch (error) {
+            mismatches.push((error as Error).message.split('\n')[0]);
+        }
+    }
+    if (mismatches.length > 0) throw new Error(mismatches.join('\n'));
+});
+
+Then('the profile photo picker is shown', async function (this: CustomWorld) {
+    await this.addEmployeePage.expectPhotoPickerShown();
+});
+
+Then('the suggested Employee Id is filled in', async function (this: CustomWorld) {
+    await this.addEmployeePage.getEmployeeId();
+});
+
+Then('Create Login Details is turned off', async function (this: CustomWorld) {
+    await this.addEmployeePage.expectCreateLoginDetailsOff();
+});
+
+// names: danh sách cách nhau bằng dấu phẩy, ví dụ "Cancel, Save".
+Then('the buttons {string} are shown', async function (this: CustomWorld, names: string) {
+    for (const name of names.split(',').map((item) => item.trim())) {
+        await this.addEmployeePage.expectButtonShown(name);
+    }
+});
+
+Then('the text {string} is shown', async function (this: CustomWorld, text: string) {
+    await this.addEmployeePage.expectTextShown(text);
+});
+
+When('I turn on Create Login Details', async function (this: CustomWorld) {
+    await this.addEmployeePage.turnOnCreateLoginDetails();
+});
+
+Then('the Status options {string} are shown', async function (this: CustomWorld, options: string) {
+    for (const status of options.split(',').map((item) => item.trim())) {
+        await this.addEmployeePage.expectStatusOptionShown(status);
+    }
+});
+
+Then('the Status {string} is selected', async function (this: CustomWorld, status: string) {
+    await this.addEmployeePage.expectStatusSelected(status);
+});
+
+// Test case không ghi nguyên văn dòng gợi ý nên chỉ kiểm tra phần nội dung chính.
+Then('the password hint mentions {string}', async function (this: CustomWorld, text: string) {
+    await this.addEmployeePage.expectTextShown(text, false);
+});
+
+Then('the profile heading is {string}', async function (this: CustomWorld, name: string) {
+    await this.addEmployeePage.expectProfileHeading(name);
+});
+
+Then('the {string} field has the value {string}', async function (
+    this: CustomWorld,
+    fieldName: string,
+    value: string
+) {
+    await this.addEmployeePage.expectFieldValue(fieldName, value);
+});

@@ -83,9 +83,16 @@ Mỗi test case có tag riêng theo ID (`@AE_P01`, `@AE_N02`...). Các test case
 | Employee Id | `@employee-id` | AE_P06, AE_P07, AE_P08, AE_B07 | add-employee.feature |
 | Create Login Details | `@login-details` | AE_P09, AE_P10, AE_B09, AE_L02 | add-employee.feature |
 | Ảnh đại diện | `@photo` | AE_N06, AE_N07 | add-employee.feature |
+| Giao diện form | `@ui` | AE_U01, AE_U02, AE_U03, AE_U04, AE_U05, AE_U06 | add-employee.feature |
+| Dữ liệu tên hợp lệ, Id tự đặt | `@positive` | AE_P02, AE_P03, AE_P04, AE_P05 | add-employee.feature |
+| Giới hạn 30 ký tự của họ tên | `@boundary` | AE_B01, AE_B02, AE_B03, AE_B04, AE_B05 | add-employee.feature |
 | Chưa đăng nhập mở Add Employee | `@addEmployee` | AE_L01 | login.feature |
 
 Dữ liệu test cố định, lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (xoá bản ghi trùng qua API của OrangeHRM, xem `support/testData.ts`). File ảnh dùng cho AE_N06, AE_N07 nằm trong `test-data/photos/`.
+
+Test case không ghi Employee Id thì giữ Id gợi ý, nhưng trước khi nhập sẽ chạy `Given the suggested Employee Id is not used yet`: nếu Id gợi ý đã có người dùng thì tải lại form lấy Id mới (tối đa 3 lần).
+
+Mỗi scenario có Test Case ID (tag `@AE_...`) ghi ở đầu report HTML; Scenario Outline mới có cột `Test Case` nên tên scenario hiện luôn ID, ví dụ `AE_B03 - Accept a name with exactly 30 characters`.
 
 Chạy toàn bộ Add Employee:
 
@@ -97,6 +104,9 @@ Chạy theo nhóm:
     npm run test:employee-id
     npm run test:login-details
     npm run test:photo
+    npm run test:ui
+    npm run test:positive
+    npm run test:boundary
 
 Chạy riêng một test case:
 

@@ -22,6 +22,24 @@ Then('the Add Employee page is visible', async function (this: CustomWorld) {
     await this.addEmployeePage.expectVisible();
 });
 
+// ---------- Tab PIM (AE_U04) ----------
+
+When('I open the PIM menu', async function (this: CustomWorld) {
+    await this.dashboardPage.openPIM();
+});
+
+When('I open the PIM tab {string}', async function (this: CustomWorld, tabName: string) {
+    await this.dashboardPage.openPimTab(tabName);
+});
+
+Then('the PIM tab {string} is selected and shows the {string} heading', async function (
+    this: CustomWorld,
+    tabName: string,
+    heading: string
+) {
+    await this.dashboardPage.expectPimTabSelected(tabName, heading);
+});
+
 // ---------- Chưa đăng nhập (AE_L01) ----------
 
 When('I open the Add Employee page URL without signing in', async function (this: CustomWorld) {

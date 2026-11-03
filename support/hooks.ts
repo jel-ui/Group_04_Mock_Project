@@ -24,6 +24,12 @@ Before(async function (this: CustomWorld) {
     this.initializePages(page);
 });
 
+// Ghi Test Case ID (tag @AE_...) vào report để truy vết từng dòng Examples về test case gốc.
+Before(function (this: CustomWorld, { pickle }) {
+    const testCaseIds = pickle.tags.map((tag) => tag.name.slice(1)).filter((name) => /^AE_/.test(name));
+    if (testCaseIds.length > 0) this.attach(`Test Case: ${testCaseIds.join(', ')}`, 'text/plain');
+});
+
 AfterStep(async function (this: CustomWorld) {
     if (!this.page || this.page.isClosed()) return;
 
