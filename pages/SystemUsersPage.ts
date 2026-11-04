@@ -46,4 +46,9 @@ export class SystemUsersPage {
         await expect(row).toHaveCount(1);
         await expect(row.getByRole('cell').nth(4)).toHaveText(status);
     }
+
+    async expectUserAbsent(username: string) {
+        await expect(this.page.getByText('No Records Found', { exact: true })).toBeVisible();
+        await expect(this.userRow(username)).toHaveCount(0);
+    }
 }

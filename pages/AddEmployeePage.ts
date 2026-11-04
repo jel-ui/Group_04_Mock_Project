@@ -210,6 +210,10 @@ export class AddEmployeePage {
         await this.saveButton().click();
     }
 
+    async doubleClickSave() {
+        await this.saveButton().dblclick({ delay: 50 });
+    }
+
     async clickCancel() {
         await this.cancelButton().click();
     }
@@ -280,6 +284,26 @@ export class AddEmployeePage {
         await expect(this.photoBox().locator('img')).toBeVisible();
         // Ô input file cũng có role button nên lấy nút + theo class.
         await expect(this.photoBox().locator('.employee-image-action')).toBeVisible();
+    }
+
+    async expectPhotoPreviewState(state: string) {
+        const image = this.photoBox().locator('img');
+        await expect(image).toBeVisible();
+        if (state === 'uploaded') {
+            await expect(this.photoInput()).toHaveValue(/F04_valid\.jpg$/);
+            await expect(image).not.toHaveAttribute('src', /default-photo\.png$/);
+            return;
+        }
+        if (state === 'default') {
+            await expect(this.photoInput()).toHaveValue('');
+            await expect(image).toHaveAttribute('src', /\/images\/default-photo\.png(?:\?.*)?$/);
+            return;
+        }
+        throw new Error(`Unknown photo preview state: ${state}`);
+    }
+
+    async expectSavedProfilePhotoShown() {
+        await expect(this.page.locator('img[src*="/pim/viewPhoto/empNumber/"]')).toBeVisible();
     }
 
     async expectCreateLoginDetailsOff() {

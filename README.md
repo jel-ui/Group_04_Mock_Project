@@ -5,7 +5,7 @@ Phần nền: đăng nhập và mở màn **PIM > Add Employee**.
 
 ## Cấu trúc
 
-- features/: file Gherkin (.feature). `login.feature` là feature đăng nhập.
+- features/: các file Gherkin được chia theo nhóm `add-employee-form`, `employee-id`, `login-details`, `profile-photo`, `employee-navigation`; `login.feature` chứa kiểm thử đăng nhập chung.
 - steps/: step definitions.
   - `login.steps.ts`: các bước đăng nhập.
   - `employee.steps.ts`: step dùng chung `Given I am logged in and on the Add Employee page`.
@@ -74,25 +74,22 @@ Mở báo cáo sau khi chạy:
 
 ## Các kịch bản Add Employee
 
-Mỗi test case có tag riêng theo ID (`@AE_P01`, `@AE_N02`...). Các test case cùng dạng được gom thành Scenario Outline, mỗi khối `Examples` là một test case và mang tag của test case đó.
+Mỗi TC có tag ID (`@AE_...`) để chạy riêng và truy vết trong report. Các trường hợp có cùng luồng dùng `Scenario Outline` với từng TC ở khối `Examples` riêng.
 
-| Nhóm | Tag nhóm | Test case | File |
-| --- | --- | --- | --- |
-| Tạo nhân viên với Id gợi ý | `@smoke` | AE_P01 | add-employee.feature |
-| Validation tên, Employee Id | `@validation` | AE_N01, AE_N02, AE_N03, AE_N04, AE_N05, AE_B06, AE_B08 | add-employee.feature |
-| Employee Id | `@employee-id` | AE_P06, AE_P07, AE_P08, AE_B07 | add-employee.feature |
-| Create Login Details | `@login-details` | AE_P09, AE_P10, AE_B09, AE_L02 | add-employee.feature |
-| Ảnh đại diện | `@photo` | AE_N06, AE_N07 | add-employee.feature |
-| Giao diện form | `@ui` | AE_U01, AE_U02, AE_U03, AE_U04, AE_U05, AE_U06 | add-employee.feature |
-| Dữ liệu tên hợp lệ, Id tự đặt | `@positive` | AE_P02, AE_P03, AE_P04, AE_P05 | add-employee.feature |
-| Giới hạn 30 ký tự của họ tên | `@boundary` | AE_B01, AE_B02, AE_B03, AE_B04, AE_B05 | add-employee.feature |
-| Chưa đăng nhập mở Add Employee | `@addEmployee` | AE_L01 | login.feature |
+| Nhóm | File | Test case |
+| --- | --- | --- |
+| Form, họ tên và hiển thị hồ sơ | `add-employee-form.feature` | AE_P01–AE_P04, AE_N01–AE_N04, AE_B01–AE_B06, AE_U01, AE_U05, AE_U06 |
+| Employee Id | `employee-id.feature` | AE_N05, AE_P05–AE_P08, AE_B07–AE_B08 |
+| Login Details | `login-details.feature` | AE_U02–AE_U03, AE_P09–AE_P10, AE_N08–AE_N13, AE_B09–AE_B13, AE_L02–AE_L04 |
+| Ảnh đại diện | `profile-photo.feature` | AE_N06–AE_N07, AE_P11–AE_P12 |
+| Điều hướng và Employee List | `employee-navigation.feature` | AE_U04, AE_P13, AE_N14 |
+| Chưa đăng nhập mở Add Employee | `login.feature` | AE_L01 |
 
-Dữ liệu test cố định, lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (xoá bản ghi trùng qua API của OrangeHRM, xem `support/testData.ts`). File ảnh dùng cho AE_N06, AE_N07 nằm trong `test-data/photos/`.
+Dữ liệu test cố định, lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (xoá bản ghi trùng qua API của OrangeHRM, xem `support/testData.ts`). File ảnh dùng cho AE_P11, AE_N06 và AE_N07 nằm trong `test-data/photos/`.
 
 Test case không ghi Employee Id thì giữ Id gợi ý, nhưng trước khi nhập sẽ chạy `Given the suggested Employee Id is not used yet`: nếu Id gợi ý đã có người dùng thì tải lại form lấy Id mới (tối đa 3 lần).
 
-Mỗi scenario có Test Case ID (tag `@AE_...`) ghi ở đầu report HTML; Scenario Outline mới có cột `Test Case` nên tên scenario hiện luôn ID, ví dụ `AE_B03 - Accept a name with exactly 30 characters`.
+Before hook ghi Test Case ID từ tag `@AE_...` vào report HTML. Một số Scenario Outline còn đưa ID vào tên hiển thị bằng cột `Test Case`; các outline khác vẫn truy vết theo tag.
 
 Chạy toàn bộ Add Employee:
 

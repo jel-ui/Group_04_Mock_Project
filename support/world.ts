@@ -2,6 +2,7 @@ import { World, setWorldConstructor } from '@cucumber/cucumber';
 import type { BrowserContext, Page } from '@playwright/test';
 import { AddEmployeePage } from '../pages/AddEmployeePage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { SystemUsersPage } from '../pages/SystemUsersPage';
 
@@ -18,6 +19,7 @@ export class CustomWorld extends World {
     loginPage!: LoginPage;
     dashboardPage!: DashboardPage;
     addEmployeePage!: AddEmployeePage;
+    employeeListPage!: EmployeeListPage;
     systemUsersPage!: SystemUsersPage;
     employeeUnderTest?: EmployeeRecord;
     createdLoginDetails?: { username: string; password: string };
@@ -29,6 +31,7 @@ export class CustomWorld extends World {
         this.loginPage = new LoginPage(page);
         this.dashboardPage = new DashboardPage(page);
         this.addEmployeePage = new AddEmployeePage(page);
+        this.employeeListPage = new EmployeeListPage(page);
         this.systemUsersPage = new SystemUsersPage(page);
     }
 }

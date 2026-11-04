@@ -1,8 +1,5 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { config } from '../support/config';
-import { DashboardPage } from '../pages/DashboardPage';
-import { LoginPage } from '../pages/LoginPage';
 import { deleteEmployeeById, deleteUserByUsername, findEmployeeNumbers } from '../support/testData';
 import { CustomWorld } from '../support/world';
 
@@ -32,30 +29,6 @@ Then('the {string} field shows the {string} error', async function (
 
 Then('the employee form remains unsaved', async function (this: CustomWorld) {
     await this.addEmployeePage.expectNotSaved();
-});
-
-Then('the created employee login account can sign in', async function (this: CustomWorld) {
-    const credentials = this.createdLoginDetails;
-    if (!credentials) throw new Error('Login details were not captured before saving.');
-
-    const browser = this.context.browser();
-    if (!browser) throw new Error('Could not access the browser to verify the created account.');
-
-    const verificationContext = await browser.newContext({ baseURL: config.baseUrl });
-    try {
-        const verificationPage = await verificationContext.newPage();
-        const loginPage = new LoginPage(verificationPage);
-        const dashboardPage = new DashboardPage(verificationPage);
-        await loginPage.open();
-        await loginPage.login(credentials.username, credentials.password);
-        await dashboardPage.expectVisible();
-        // Góc phải trên hiện đúng tên nhân viên vừa tạo.
-        if (this.employeeUnderTest) {
-            await dashboardPage.expectUserName(this.employeeUnderTest.firstName + ' ' + this.employeeUnderTest.lastName);
-        }
-    } finally {
-        await verificationContext.close();
-    }
 });
 
 // ---------- Chuẩn bị và dọn dữ liệu cố định ----------
@@ -195,6 +168,12 @@ Then('the form fields are shown:', async function (this: CustomWorld, table: Dat
         }
     }
     if (mismatches.length > 0) throw new Error(mismatches.join('\n'));
+});
+
+Then('the fields {string} are visible', async function (this: CustomWorld, fields: string) {
+    for (const fieldName of fields.split(',').map((field) => field.trim())) {
+        await this.addEmployeePage.expectFieldShown(fieldName);
+    }
 });
 
 Then('the profile photo picker is shown', async function (this: CustomWorld) {
