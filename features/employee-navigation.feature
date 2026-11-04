@@ -15,7 +15,7 @@ Feature: Employee Navigation
 
 @employee-list @positive @AE_P13
   Scenario: Cancel adding an employee and verify no record is created
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QACancel |
       | Last Name  | X        |
@@ -24,7 +24,7 @@ Feature: Employee Navigation
 
   @employee-list @validation @AE_N14
   Scenario: Double-clicking Save creates only one employee record
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QADouble |
       | Last Name  | Click    |

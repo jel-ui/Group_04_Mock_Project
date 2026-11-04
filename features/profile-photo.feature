@@ -29,7 +29,7 @@ Feature: Profile Photo
 
 @photo
   Scenario Outline: Save an employee with <Photo State>
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QAPhoto |
       | Last Name  | Test    |

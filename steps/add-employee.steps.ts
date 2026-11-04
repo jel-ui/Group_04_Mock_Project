@@ -1,6 +1,6 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { deleteEmployeeById, deleteUserByUsername, findEmployeeNumbers } from '../support/testData';
+import { createUnusedEmployeeId, deleteEmployeeById, deleteUserByUsername, findEmployeeNumbers } from '../support/testData';
 import { CustomWorld } from '../support/world';
 
 When('I save the employee', async function (this: CustomWorld) {
@@ -132,21 +132,13 @@ Then('the suggested Employee Id is greater than the noted one', async function (
     expect(Number(newEmployeeId)).toBeGreaterThan(Number(this.notedEmployeeId));
 });
 
-// ---------- Employee Id gợi ý ----------
+// ---------- Employee Id duy nhất cho dữ liệu test ----------
 
-// Dùng cho test case không ghi Employee Id: giữ Id gợi ý nhưng kiểm tra trước là Id chưa có ai dùng.
-// Demo dùng chung nên Id gợi ý có thể đã bị lấy; khi đó tải lại form để lấy Id gợi ý mới.
-const SUGGESTED_ID_ATTEMPTS = 3;
-
-Given('the suggested Employee Id is not used yet', async function (this: CustomWorld) {
-    for (let attempt = 1; attempt <= SUGGESTED_ID_ATTEMPTS; attempt++) {
-        const suggestedId = await this.addEmployeePage.getEmployeeId();
-        const existing = await findEmployeeNumbers(this.context.request, suggestedId);
-        if (existing.length === 0) return;
-        this.attach(`Suggested Employee Id ${suggestedId} is already used (attempt ${attempt}), reloading the form.`, 'text/plain');
-        await this.addEmployeePage.open();
-    }
-    throw new Error(`The suggested Employee Id was already used after ${SUGGESTED_ID_ATTEMPTS} attempts.`);
+// Dùng Employee Id ngẫu nhiên đã kiểm tra qua API cho các test không kiểm tra chính ID gợi ý.
+// Cách này tránh phụ thuộc vào ID gợi ý có thể bị người dùng khác lấy trong lúc CI đang chạy.
+Given('I have an unused Employee Id', async function (this: CustomWorld) {
+    const employeeId = await createUnusedEmployeeId(this.context.request);
+    await this.addEmployeePage.enterEmployeeId(employeeId);
 });
 
 // ---------- Giao diện form (AE_U01 - AE_U06) ----------

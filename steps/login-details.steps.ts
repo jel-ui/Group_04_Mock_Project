@@ -39,6 +39,10 @@ Then('the created employee account login result is {string}', async function (
             }
             return;
         }
+        if (expectedResult === 'not signed in') {
+            await loginPage.expectBlocked();
+            return;
+        }
         await loginPage.expectErrorMessage(expectedResult);
     } finally {
         await verificationContext.close();

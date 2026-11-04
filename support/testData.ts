@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { APIRequestContext } from '@playwright/test';
 
 // Dọn dữ liệu cố định trước khi scenario nhập lại, để chạy lại nhiều lần không bị "already exists".
@@ -26,6 +27,13 @@ export async function findEmployeeNumbers(request: APIRequestContext, employeeId
         .map((employee: { empNumber: number }) => employee.empNumber);
 }
 
+export async function createUnusedEmployeeId(request: APIRequestContext) {
+    for (let attempt = 0; attempt < 10; attempt++) {
+        const employeeId = 'T' + randomBytes(5).toString('hex').slice(0, 9).toUpperCase();
+        if ((await findEmployeeNumbers(request, employeeId)).length === 0) return employeeId;
+    }
+    throw new Error('Could not generate an unused Employee Id after 10 attempts.');
+}
 // Xoá nhân viên đang dùng Employee Id này (tài khoản login gắn với nhân viên cũng bị xoá theo).
 export async function deleteEmployeeById(request: APIRequestContext, employeeId: string) {
     await deleteByIds(request, `${API}/pim/employees`, await findEmployeeNumbers(request, employeeId));

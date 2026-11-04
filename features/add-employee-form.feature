@@ -72,7 +72,7 @@ Feature: Add Employee form
   # Tự tạo nhân viên có Middle Name (dữ liệu của AE_P01) để chạy độc lập.
   @ui @AE_U05
   Scenario: Show only First Name and Last Name in the profile heading
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | QAHung |
       | Middle Name | M      |
@@ -96,7 +96,7 @@ Feature: Add Employee form
 
   @positive
   Scenario Outline: <Test Case> - Save an employee whose name data is accepted
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | <First Name>  |
       | Middle Name | <Middle Name> |
@@ -125,7 +125,7 @@ Feature: Add Employee form
 
   @boundary
   Scenario Outline: <Test Case> - Accept a name with exactly 30 characters
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | <First Name>  |
       | Middle Name | <Middle Name> |

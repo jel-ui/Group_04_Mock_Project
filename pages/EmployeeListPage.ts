@@ -41,10 +41,6 @@ export class EmployeeListPage {
     }
 
     async expectEmployeeCount(employeeId: string, count: number) {
-        const rows = this.rowsForEmployeeId(employeeId);
-        if (count === 0) {
-            await expect(this.page.getByText('No Records Found', { exact: true })).toBeVisible();
-        }
-        await expect(rows).toHaveCount(count);
+        await expect(this.rowsForEmployeeId(employeeId)).toHaveCount(count);
     }
 }

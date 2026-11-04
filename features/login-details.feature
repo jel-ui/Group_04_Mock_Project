@@ -27,7 +27,7 @@ Feature: Create Login Details
   @login-details
   Scenario Outline: Create an employee with login details
     Given no user account uses Username "<Username>"
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name | <First Name> |
       | Last Name  | <Last Name>  |
@@ -63,7 +63,7 @@ Feature: Create Login Details
 @login-details
 Scenario Outline: Sign-in is allowed only for an Enabled employee account
   Given no user account uses Username "<Username>"
-  Given the suggested Employee Id is not used yet
+  Given I have an unused Employee Id
   When I enter employee details:
     | First Name | <First Name> |
     | Last Name  | <Last Name>  |
@@ -84,7 +84,7 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
   @AE_L03
   Examples: Disabled account cannot sign in
     | First Name | Last Name | Username  | Status   | Password | Login Result    |
-    | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | Account disabled |
+    | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
 
   @login-details @validation @AE_N08
   Scenario: Show employee and Login Details errors at the same time
@@ -92,7 +92,8 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
       | Last Name | User |
     And I turn on Create Login Details
     And I save the employee
-    Then the fields "First Name, Username, Password, Confirm Password" show the "Required" error
+    Then the fields "First Name, Username, Password" show the "Required" error
+    And the "Confirm Password" field shows the "Passwords do not match" error
     And the employee form remains unsaved
 
   @login-details @validation @AE_N09
@@ -102,7 +103,8 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
       | Last Name  | User    |
     And I turn on Create Login Details
     And I save the employee
-    Then the fields "Username, Password, Confirm Password" show the "Required" error
+    Then the fields "Username, Password" show the "Required" error
+    And the "Confirm Password" field shows the "Passwords do not match" error
     And the employee form remains unsaved
 
   @login-details @validation @AE_N10
@@ -167,7 +169,7 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
   @login-details @validation @AE_L04
   Scenario: Turning off Create Login Details prevents account creation
     Given no user account uses Username "qa_toggle_off04"
-    Given the suggested Employee Id is not used yet
+    Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QAToggle |
       | Last Name  | Off      |

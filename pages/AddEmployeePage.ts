@@ -303,7 +303,7 @@ export class AddEmployeePage {
     }
 
     async expectSavedProfilePhotoShown() {
-        await expect(this.page.locator('img[src*="/pim/viewPhoto/empNumber/"]')).toBeVisible();
+        await expect(this.page.locator('img.employee-image[src*="/pim/viewPhoto/empNumber/"]')).toBeVisible();
     }
 
     async expectCreateLoginDetailsOff() {
