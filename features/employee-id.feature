@@ -26,6 +26,7 @@ Feature: Employee Id
       | Employee Id | <Employee Id> |
     And I save the employee
     Then the employee profile shows the submitted details
+    And the employee appears in the Employee List when searched by name
 
     # Giữ Id 9102 theo Excel; bước "no employee uses Employee Id" dọn bản ghi cũ nên chạy lại không bị trùng.
     @AE_P05 @positive
@@ -67,6 +68,7 @@ Feature: Employee Id
     When I change the Employee Id to "91002"
     And I save the employee
     Then the employee profile shows the submitted details
+    And the employee appears in the Employee List when searched by name
 
 @employee-id @boundary @AE_B08
 Scenario: Reject an Employee Id longer than 10 characters

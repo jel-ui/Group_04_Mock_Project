@@ -15,6 +15,10 @@ export class EmployeeListPage {
         return this.fieldBox('Employee Id').locator('input');
     }
 
+    employeeNameFilter() {
+        return this.fieldBox('Employee Name').locator('input');
+    }
+
     searchButton() {
         return this.page.getByRole('button', { name: 'Search', exact: true });
     }
@@ -23,6 +27,12 @@ export class EmployeeListPage {
         return this.page.getByRole('row').filter({
             has: this.page.getByRole('cell', { name: employeeId, exact: true })
         });
+    }
+
+    private rowsForEmployeeName(firstName: string, middleName: string, lastName: string) {
+        let rows = this.page.getByRole('row').filter({ hasText: firstName }).filter({ hasText: lastName });
+        if (middleName) rows = rows.filter({ hasText: middleName });
+        return rows;
     }
 
     async open() {
@@ -38,6 +48,19 @@ export class EmployeeListPage {
     async searchByEmployeeId(employeeId: string) {
         await this.employeeIdFilter().fill(employeeId);
         await this.searchButton().click();
+    }
+
+    async searchByEmployeeName(employeeName: string) {
+        const nameFilter = this.employeeNameFilter();
+        await nameFilter.fill(employeeName);
+        const suggestion = this.page.locator('.oxd-autocomplete-option').filter({ hasText: employeeName }).first();
+        await expect(suggestion).toBeVisible({ timeout: 10000 });
+        await suggestion.click();
+        await this.searchButton().click();
+    }
+
+    async expectEmployeeVisibleByName(firstName: string, middleName: string, lastName: string) {
+        await expect(this.rowsForEmployeeName(firstName, middleName, lastName).first()).toBeVisible();
     }
 
     async expectEmployeeCount(employeeId: string, count: number) {

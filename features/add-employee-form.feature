@@ -12,6 +12,7 @@ Feature: Add Employee form
       | Last Name   | Le     |
     And I save the employee
     Then the employee profile shows the submitted details
+    And the employee appears in the Employee List when searched by name
 
   @AE_N01 @validation
   Scenario: Require First Name and Last Name
@@ -103,6 +104,7 @@ Feature: Add Employee form
       | Last Name   | <Last Name>   |
     And I save the employee
     Then the employee profile shows the submitted details
+    And the employee appears in the Employee List when searched by name
 
     # BR-18 đang chờ stakeholder xác nhận có cho phép số, ký tự đặc biệt hay không; giữ Expected của TC là lưu thành công.
     @AE_P02
@@ -132,6 +134,7 @@ Feature: Add Employee form
       | Last Name   | <Last Name>   |
     And I save the employee
     Then the employee profile shows the submitted details
+    And the employee appears in the Employee List when searched by name
 
     @AE_B01
     Examples: First Name has exactly 30 characters

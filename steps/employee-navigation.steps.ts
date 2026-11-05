@@ -24,3 +24,12 @@ Then('the Employee List has {int} record(s) for the employee under test', async 
     await this.employeeListPage.searchByEmployeeId(employeeId);
     await this.employeeListPage.expectEmployeeCount(employeeId, expectedCount);
 });
+Then('the employee appears in the Employee List when searched by name', async function (this: CustomWorld) {
+    const employee = this.employeeUnderTest;
+    if (!employee) throw new Error('Employee details were not captured before checking the Employee List.');
+
+    const employeeName = [employee.firstName, employee.middleName, employee.lastName].filter(Boolean).join(' ');
+    await this.employeeListPage.open();
+    await this.employeeListPage.searchByEmployeeName(employeeName);
+    await this.employeeListPage.expectEmployeeVisibleByName(employee.firstName, employee.middleName, employee.lastName);
+});
