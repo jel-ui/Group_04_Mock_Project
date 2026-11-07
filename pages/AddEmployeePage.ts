@@ -22,8 +22,6 @@ export class AddEmployeePage {
         return this.page.getByRole('textbox', { name: 'Last Name' });
     }
 
-    // Label Employee Id, Username, Password, Confirm Password không gắn với ô nhập nên không dùng getByLabel được.
-    // Cách lấy: tìm khung field (.oxd-input-group) có label đó, rồi lấy ô input bên trong.
     private fieldBox(label: string) {
         return this.page.locator('.oxd-input-group').filter({ has: this.page.getByText(label, { exact: true }) });
     }
@@ -90,7 +88,6 @@ export class AddEmployeePage {
     }
 
     // Dấu * của OrangeHRM là class oxd-input-field-required trên label (CSS vẽ dấu *), không phải chữ.
-    // Ô tên: chỉ xét label của riêng ô đó, không tính label chung "Employee Full Name".
     requiredMarker(fieldName: string) {
         if (this.isNameField(fieldName)) {
             return this.page.locator('.oxd-input-group')
@@ -136,7 +133,6 @@ export class AddEmployeePage {
 
     // ---------- Thao tác ----------
 
-    // Cần baseURL = https://opensource-demo.orangehrmlive.com và đã đăng nhập.
     async open() {
         await this.page.goto('/web/index.php/pim/addEmployee');
         await this.expectVisible();
@@ -167,6 +163,10 @@ export class AddEmployeePage {
     // fill() tự xóa Employee Id gợi ý trước khi nhập.
     async enterEmployeeId(employeeId: string) {
         await this.employeeIdInput().fill(employeeId);
+    }
+
+    async clearEmployeeId() {
+        await this.employeeIdInput().fill('');
     }
 
     async getEmployeeId() {
@@ -224,7 +224,6 @@ export class AddEmployeePage {
     }
 
     // Nhận bảng data từ feature. Cột nào không có hoặc để trống thì bỏ qua ô đó.
-    // Tên cột: First Name, Middle Name, Last Name, Employee Id
     async enterEmployeeDetails(details: Record<string, string>) {
         if (details['First Name']) await this.enterFirstName(details['First Name']);
         if (details['Middle Name']) await this.enterMiddleName(details['Middle Name']);
@@ -233,7 +232,6 @@ export class AddEmployeePage {
     }
 
     // Bật Create Login Details rồi nhập phần login.
-    // Tên cột: Username, Status, Password, Confirm Password
     async enterLoginDetails(details: Record<string, string>) {
         await this.turnOnCreateLoginDetails();
         await this.enterUsername(details['Username']);
@@ -242,7 +240,7 @@ export class AddEmployeePage {
         await this.enterConfirmPassword(details['Confirm Password']);
     }
 
-    // ---------- Xác nhận ----------
+    //---------- Expect ----------
 
     async expectVisible() {
         await expect(this.page).toHaveURL(/\/pim\/addEmployee$/, { timeout: 30000 });
@@ -286,11 +284,11 @@ export class AddEmployeePage {
         await expect(this.photoBox().locator('.employee-image-action')).toBeVisible();
     }
 
-    async expectPhotoPreviewState(state: string) {
+    async expectPhotoPreviewState(state: string, fileName: string) {
         const image = this.photoBox().locator('img');
         await expect(image).toBeVisible();
         if (state === 'uploaded') {
-            await expect(this.photoInput()).toHaveValue(/F04_valid\.jpg$/);
+            expect((await this.photoInput().inputValue()).endsWith(fileName)).toBe(true);
             await expect(image).not.toHaveAttribute('src', /default-photo\.png$/);
             return;
         }

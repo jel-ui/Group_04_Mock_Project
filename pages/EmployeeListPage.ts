@@ -63,6 +63,15 @@ export class EmployeeListPage {
         await expect(this.rowsForEmployeeName(firstName, middleName, lastName).first()).toBeVisible();
     }
 
+    async searchByEmployeeNameWithoutSelection(searchText: string) {
+        await this.employeeNameFilter().fill(searchText);
+        await this.searchButton().click();
+    }
+
+    async expectNoEmployeeNameMatch(searchText: string) {
+        await expect(this.page.locator('.oxd-table-body .oxd-table-row').filter({ hasText: searchText })).toHaveCount(0);
+    }
+
     async expectEmployeeCount(employeeId: string, count: number) {
         await expect(this.rowsForEmployeeId(employeeId)).toHaveCount(count);
     }

@@ -3,7 +3,6 @@ import { expect } from '@playwright/test';
 import { config } from '../support/config';
 import { CustomWorld } from '../support/world';
 
-// Step dùng chung cho người 2 và người 3: đưa test tới thẳng màn Add Employee.
 Given('I am logged in and on the Add Employee page', async function (this: CustomWorld) {
     await this.loginPage.open();
     await this.loginPage.login(config.username, config.password);

@@ -23,7 +23,7 @@ export class CustomWorld extends World {
     systemUsersPage!: SystemUsersPage;
     employeeUnderTest?: EmployeeRecord;
     createdLoginDetails?: { username: string; password: string };
-    // Employee Id gợi ý được ghi lại trước khi lưu (AE_P06).
+    // Employee Id gợi ý được ghi lại trước khi lưu (AE_P07).
     notedEmployeeId?: string;
 
     initializePages(page: Page) {

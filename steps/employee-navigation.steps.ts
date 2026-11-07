@@ -33,3 +33,16 @@ Then('the employee appears in the Employee List when searched by name', async fu
     await this.employeeListPage.searchByEmployeeName(employeeName);
     await this.employeeListPage.expectEmployeeVisibleByName(employee.firstName, employee.middleName, employee.lastName);
 });
+Then('the employee is found in Employee List by Employee Name {string}', async function (this: CustomWorld, searchName: string) {
+    const employee = this.employeeUnderTest;
+    if (!employee) throw new Error('Employee details were not captured before checking the Employee List.');
+    await this.employeeListPage.open();
+    await this.employeeListPage.searchByEmployeeName(searchName);
+    await this.employeeListPage.expectEmployeeVisibleByName(employee.firstName, employee.middleName, employee.lastName);
+});
+
+Then('the employee is absent from Employee List when searched by Employee Name {string}', async function (this: CustomWorld, searchName: string) {
+    await this.employeeListPage.open();
+    await this.employeeListPage.searchByEmployeeNameWithoutSelection(searchName);
+    await this.employeeListPage.expectNoEmployeeNameMatch(searchName);
+});

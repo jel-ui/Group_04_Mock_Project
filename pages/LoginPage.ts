@@ -38,6 +38,7 @@ export class LoginPage {
         await this.expectVisible();
 
         await expect(this.page.getByRole('heading', { name: 'Dashboard' })).toHaveCount(0);
+        await expect(this.page.locator('.oxd-alert-content-text')).toHaveCount(0);
     }
 
     async expectRequiredMessageCount(count: number) {

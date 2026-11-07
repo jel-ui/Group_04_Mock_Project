@@ -11,8 +11,8 @@ Feature: Add Employee form
       | Middle Name | M      |
       | Last Name   | Le     |
     And I save the employee
-    Then the employee profile shows the submitted details
-    And the employee appears in the Employee List when searched by name
+    Then the success toast is shown
+    And the employee profile shows the submitted details
 
   @AE_N01 @validation
   Scenario: Require First Name and Last Name
@@ -21,9 +21,35 @@ Feature: Add Employee form
     And the "Last Name" field shows the "Required" error
     And the employee form remains unsaved
 
-# ---------- Validation tên và Employee Id ----------
-  # Giá trị để trong ngoặc kép để giữ được dấu cách; "" là không nhập (Employee Id thì giữ Id gợi ý).
+  @AE_N06 @positive
+  Scenario: Allow saving an employee with an empty Employee Id
+    When I enter employee details:
+      | First Name | QAEmptyID |
+      | Last Name  | Test      |
+    And I clear the Employee Id
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the "Employee Id" field has the value ""
 
+  @AE_N07 @positive
+  Scenario: Allow duplicate names when Employee Id is empty
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | QAEmptyID |
+      | Last Name  | Same      |
+    And I clear the Employee Id
+    And I save the employee
+    Then the employee profile shows the submitted details
+    When I open the Add Employee page again
+    And I enter employee details:
+      | First Name | QAEmptyID |
+      | Last Name  | Same      |
+    And I clear the Employee Id
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the "Employee Id" field has the value ""
+#----------Validation tên và Employee Id----------
+  # Giá trị để trong ngoặc kép để giữ được dấu cách; "" là không nhập (Employee Id thì giữ Id gợi ý).
   @validation
   Scenario Outline: Show a validation error and keep the form unsaved
     When I enter First Name <First Name>, Last Name <Last Name> and Employee Id <Employee Id>
@@ -56,17 +82,15 @@ Feature: Add Employee form
       | First Name | Last Name                         | Employee Id | Error Fields | Message                         |
       | "QALast"   | "ccccccccccccccccccccccccccccccc" | ""          | Last Name    | Should not exceed 30 characters |
 
-# ---------- Giao diện form ----------
-
-  # TC ghi "First và Last có *"; BA 4.2 và BA Personal Details ghi dấu * nằm ở nhãn "Employee Full Name".
+#---------- Giao diện form ----------
   # Giữ đúng Expected của TC: nếu DOM khác thì scenario FAIL và thông báo lỗi ghi rõ khác biệt.
-  # Bước kiểm tra dấu * để cuối để các kiểm tra khác vẫn chạy được.
   @ui @AE_U01
   Scenario: Show the form layout, defaults and photo hint
     Then the profile photo picker is shown
     And the suggested Employee Id is filled in
     And Create Login Details is turned off
     And the buttons "Cancel, Save" are shown
+    And the text "* Required" is shown
     And the text "Accepts jpg, .png, .gif up to 1MB. Recommended dimensions: 200px X 200px" is shown
     And the fields "First Name, Middle Name, Last Name, Employee Id" are visible
 
@@ -91,10 +115,8 @@ Feature: Add Employee form
     And the "First Name" field has the value "Le"
     And the employee form remains unsaved
 
-# ---------- Dữ liệu tên hợp lệ ----------
-  # Test case không ghi Employee Id nên giữ Id gợi ý, chỉ kiểm tra trước là Id chưa có ai dùng.
-  # Ô Middle Name để trống nghĩa là không nhập.
-
+#---------- Dữ liệu tên hợp lệ ----------
+  # Chỉ kiểm tra trước là Id chưa có ai dùng.
   @positive
   Scenario Outline: <Test Case> - Save an employee whose name data is accepted
     Given I have an unused Employee Id
@@ -104,9 +126,7 @@ Feature: Add Employee form
       | Last Name   | <Last Name>   |
     And I save the employee
     Then the employee profile shows the submitted details
-    And the employee appears in the Employee List when searched by name
 
-    # BR-18 đang chờ stakeholder xác nhận có cho phép số, ký tự đặc biệt hay không; giữ Expected của TC là lưu thành công.
     @AE_P02
     Examples: First Name contains digits and special characters
       | Test Case | First Name | Middle Name | Last Name |
@@ -134,7 +154,6 @@ Feature: Add Employee form
       | Last Name   | <Last Name>   |
     And I save the employee
     Then the employee profile shows the submitted details
-    And the employee appears in the Employee List when searched by name
 
     @AE_B01
     Examples: First Name has exactly 30 characters
@@ -151,7 +170,6 @@ Feature: Add Employee form
       | Test Case | First Name | Middle Name | Last Name                      |
       | AE_B05    | Nguyen     |             | cccccccccccccccccccccccccccccc |
 
-  # Expected của AE_B04 chỉ ghi thông báo lỗi, không ghi "Không lưu" nên không kiểm tra thêm bước đó.
   @boundary @AE_B04
   Scenario: Show the 30-character error for a 31-character Middle Name
     When I enter employee details:

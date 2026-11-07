@@ -4,7 +4,6 @@ Feature: Create Login Details
   Background:
     Given I am logged in and on the Add Employee page
 
-# TC chỉ ghi "dòng gợi ý mật khẩu"; nội dung lấy theo BA 4.2 (chữ hoa, chữ thường, ký hiệu và số).
   @ui @AE_U02
   Scenario: Show the login fields after turning on Create Login Details
     When I turn on Create Login Details
@@ -40,12 +39,12 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the user "<Username>" has status "<Status>" in User Management
 
-    @AE_P09
+    @AE_P11
     Examples: Status Enabled
       | First Name | Last Name | Username  | Status  | Password |
       | QALogin    | User      | qa_user01 | Enabled | Qa@12345 |
 
-    @AE_P10
+    @AE_P12
     Examples: Status Disabled
       | First Name | Last Name | Username  | Status   | Password |
       | QADisabled | User      | qa_user02 | Disabled | Qa@12345 |
@@ -86,7 +85,22 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     | First Name | Last Name | Username  | Status   | Password | Login Result    |
     | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
 
-  @login-details @validation @AE_N08
+  @login-details @positive @AE_P19
+  Scenario: Verify the new username in User Management
+    Given no user account uses Username "vuviet"
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | Vu   |
+      | Last Name  | Viet |
+    And I enter login details:
+      | Username         | vuviet      |
+      | Status           | Enabled     |
+      | Password         | vuviet12345 |
+      | Confirm Password | vuviet12345 |
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the user "vuviet" has status "Enabled" in User Management
+  @login-details @validation @AE_N16
   Scenario: Show employee and Login Details errors at the same time
     When I enter employee details:
       | Last Name | User |
@@ -96,7 +110,7 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     And the "Confirm Password" field shows the "Passwords do not match" error
     And the employee form remains unsaved
 
-  @login-details @validation @AE_N09
+  @login-details @validation @AE_N17
   Scenario: Require Username, Password and Confirm Password when login is enabled
     When I enter employee details:
       | First Name | QALogin |
@@ -107,7 +121,7 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     And the "Confirm Password" field shows the "Passwords do not match" error
     And the employee form remains unsaved
 
-  @login-details @validation @AE_N10
+  @login-details @validation @AE_N18
   Scenario: Reject an already registered Username
     When I enter employee details:
       | First Name | QALogin |
@@ -136,17 +150,17 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     Then the "<Error Field>" field shows the "<Message>" error
     And the employee form remains unsaved
 
-    @AE_N11
+    @AE_N19
     Examples: Password has no number
       | Username   | Password  | Confirm Password | Error Field | Message                                    |
       | qa_auto11  | Qaaaaaaa@ | Qaaaaaaa@         | Password    | Your password must contain minimum 1 number |
 
-    @AE_N12
+    @AE_N20
     Examples: Password has no lowercase letter
       | Username   | Password | Confirm Password | Error Field | Message                                             |
       | qa_auto12  | 12345678 | 12345678         | Password    | Your password must contain minimum 1 lower-case letter |
 
-    @AE_N13
+    @AE_N21
     Examples: Confirm Password does not match
       | Username   | Password | Confirm Password | Error Field      | Message               |
       | qa_auto13  | Qa@12345 | Qa@12346         | Confirm Password | Passwords do not match |

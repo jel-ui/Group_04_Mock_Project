@@ -4,7 +4,7 @@ import { expect, type Page } from '@playwright/test';
 export class SystemUsersPage {
     constructor(private readonly page: Page) {}
 
-    // ---------- Locator ----------
+    //---------- Locator ----------
 
     heading() {
         return this.page.getByRole('heading', { name: 'System Users' });

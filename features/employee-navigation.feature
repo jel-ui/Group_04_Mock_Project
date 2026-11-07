@@ -13,16 +13,35 @@ Feature: Employee Navigation
     When I open the PIM tab "Employee List"
     Then the PIM tab "Employee List" is selected and shows the "Employee Information" heading
 
-@employee-list @positive @AE_P13
+@employee-list @positive @AE_P05
+  Scenario: Find a newly created employee by Employee Name
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | Ba    |
+      | Last Name  | Vuong |
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the employee is found in Employee List by Employee Name "Vuong"
+
+@employee-list @positive @AE_P10
+  Scenario: Find a newly created employee by Employee Id
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | Le  |
+      | Last Name  | Duc |
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the Employee List has 1 record for the employee under test
+@employee-list @positive @AE_P20
   Scenario: Cancel adding an employee and verify no record is created
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QACancel |
       | Last Name  | X        |
     When I cancel the employee form
-    Then the Employee List has 0 records for the employee under test
+    Then the employee is absent from Employee List when searched by Employee Name "QACancel"
 
-  @employee-list @validation @AE_N14
+  @employee-list @validation @AE_N22
   Scenario: Double-clicking Save creates only one employee record
     Given I have an unused Employee Id
     When I enter employee details:

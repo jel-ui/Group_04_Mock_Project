@@ -31,6 +31,10 @@ Then('the employee form remains unsaved', async function (this: CustomWorld) {
     await this.addEmployeePage.expectNotSaved();
 });
 
+Then('the success toast is shown', async function (this: CustomWorld) {
+    await this.addEmployeePage.expectSuccessToast();
+});
+
 // ---------- Chuẩn bị và dọn dữ liệu cố định ----------
 
 // Sau khi dọn thì tải lại form để Employee Id gợi ý là mới nhất.
@@ -92,6 +96,10 @@ When('I enter login details:', async function (this: CustomWorld, table: DataTab
     this.createdLoginDetails = { username: data['Username'], password: data['Password'] };
 });
 
+When('I clear the Employee Id', async function (this: CustomWorld) {
+    await this.addEmployeePage.clearEmployeeId();
+    if (this.employeeUnderTest) this.employeeUnderTest.employeeId = '';
+});
 When('I change the Employee Id to {string}', async function (this: CustomWorld, employeeId: string) {
     await this.addEmployeePage.enterEmployeeId(employeeId);
     if (this.employeeUnderTest) this.employeeUnderTest.employeeId = employeeId;
