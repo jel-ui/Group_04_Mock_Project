@@ -1,4 +1,4 @@
-import { After, AfterAll, AfterStep, Before, BeforeAll, Status, setDefaultTimeout } from '@cucumber/cucumber';
+import { After, AfterAll, Before, BeforeAll, Status, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium, firefox, webkit, type Browser } from '@playwright/test';
 import { config } from './config';
 import { CustomWorld } from './world';
@@ -32,23 +32,24 @@ Before(function (this: CustomWorld, { pickle }) {
     if (testCaseIds.length > 0) this.attach('Test Case: ' + testCaseIds.join(', '), 'text/plain');
 });
 
-AfterStep(async function (this: CustomWorld) {
-    if (!this.page || this.page.isClosed()) return;
-
-    try {
-        // Chờ trang chuyển xong (vd. sau khi bấm Login) để ảnh không bị lỗi.
-        await this.page.waitForLoadState('load');
-        const screenshot = await this.page.screenshot({ fullPage: false, scale: 'css' });
-        this.attach(screenshot, 'image/png');
-    } catch (error) {
-        // Không để lỗi chụp ảnh che mất lỗi thực tế của step.
-        console.warn('Could not capture screenshot after step:', (error as Error).message.split('\n')[0]);
-    }
-});
-
 After(async function (this: CustomWorld, { result }) {
-    if (result?.status === Status.FAILED && this.page && !this.page.isClosed()) {
-        this.attach(`Failed at URL: ${this.page.url()}`, 'text/plain');
+    // Chụp một ảnh cuối mỗi scenario để giảm tải so với chụp sau từng step.
+    if (this.page && !this.page.isClosed()) {
+        try {
+            const screenshot = await this.page.screenshot({
+                fullPage: false,
+                scale: 'css',
+                animations: 'disabled',
+                timeout: 5_000
+            });
+            this.attach(screenshot, 'image/png');
+        } catch (error) {
+            console.warn('Could not capture final scenario screenshot:', (error as Error).message.split('\n')[0]);
+        }
+
+        if (result?.status === Status.FAILED) {
+            this.attach('Failed at URL: ' + this.page.url(), 'text/plain');
+        }
     }
     if (this.context) await this.context.close();
 });
