@@ -23,8 +23,8 @@ Feature: Create Login Details
 
 # ---------- Create Login Details ----------
 
-  @login-details
-  Scenario Outline: Create an employee with login details
+  @login-details @positive
+  Scenario Outline: <TC ID> - Create an employee account (<Case>)
     Given no user account uses Username "<Username>"
     Given I have an unused Employee Id
     When I enter employee details:
@@ -39,51 +39,52 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the user "<Username>" has status "<Status>" in User Management
 
-    @AE_P11
-    Examples: Status Enabled
-      | First Name | Last Name | Username  | Status  | Password |
-      | QALogin    | User      | qa_user01 | Enabled | Qa@12345 |
+    Examples:
+      | TC ID  | Case            | First Name | Last Name | Username  | Status   | Password |
+      | AE_P11 | Status Enabled  | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 |
+      | AE_P12 | Status Disabled | QADisabled | User      | qa_user02 | Disabled | Qa@12345 |
 
-    @AE_P12
-    Examples: Status Disabled
-      | First Name | Last Name | Username  | Status   | Password |
-      | QADisabled | User      | qa_user02 | Disabled | Qa@12345 |
+  @login-details @positive @boundary
+  Scenario Outline: <TC ID> - Accept username length boundary (<Case>)
+    Given no user account uses Username "<Username>"
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | <First Name> |
+      | Last Name  | <Last Name>  |
+    And I enter login details:
+      | Username         | <Username> |
+      | Status           | <Status>   |
+      | Password         | <Password> |
+      | Confirm Password | <Password> |
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the user "<Username>" has status "<Status>" in User Management
 
-    @AE_B09
-    Examples: Username has the minimum 5 characters
-      | First Name | Last Name | Username | Status  | Password  |
-      | QAId100    | Tester    | AAAAA    | Enabled | Qa@123456 |
+    Examples:
+      | TC ID  | Case                          | First Name | Last Name | Username                                 | Status  | Password  |
+      | AE_B09 | Username has minimum 5 chars  | QAId100    | Tester    | AAAAA                                    | Enabled | Qa@123456 |
+      | AE_B10 | Username has exactly 40 chars | QAId100    | Tester    | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Enabled | Qa@123456 |
 
-    @AE_B10 @boundary
-    Examples: Username has exactly 40 characters
-      | First Name | Last Name | Username                                  | Status  | Password |
-      | QAId100    | Tester    | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Enabled | Qa@123456 |
+  @login-details
+  Scenario Outline: <TC ID> - Sign in with a <Status> employee account
+    Given no user account uses Username "<Username>"
+    Given I have an unused Employee Id
+    When I enter employee details:
+      | First Name | <First Name> |
+      | Last Name  | <Last Name>  |
+    And I enter login details:
+      | Username         | <Username> |
+      | Status           | <Status>   |
+      | Password         | <Password> |
+      | Confirm Password | <Password> |
+    And I save the employee
+    Then the employee profile shows the submitted details
+    And the created employee account login result is "<Login Result>"
 
-@login-details
-Scenario Outline: Sign-in is allowed only for an Enabled employee account
-  Given no user account uses Username "<Username>"
-  Given I have an unused Employee Id
-  When I enter employee details:
-    | First Name | <First Name> |
-    | Last Name  | <Last Name>  |
-  And I enter login details:
-    | Username         | <Username> |
-    | Status           | <Status>   |
-    | Password         | <Password> |
-    | Confirm Password | <Password> |
-  And I save the employee
-  Then the employee profile shows the submitted details
-  And the created employee account login result is "<Login Result>"
-
-  @AE_L02
-  Examples: Enabled account can sign in
-    | First Name | Last Name | Username  | Status  | Password | Login Result |
-    | QALogin    | User      | qa_user01 | Enabled | Qa@12345 | signed in    |
-
-  @AE_L03
-  Examples: Disabled account cannot sign in
-    | First Name | Last Name | Username  | Status   | Password | Login Result    |
-    | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
+    Examples:
+      | TC ID  | First Name | Last Name | Username  | Status   | Password | Login Result  |
+      | AE_L02 | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 | signed in     |
+      | AE_L03 | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
 
   @login-details @positive @AE_P19
   Scenario: Verify the new username in User Management
@@ -135,8 +136,8 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     Then the "Username" field shows the "Username already exists" error
     And the employee form remains unsaved
 
-  @login-details @validation @boundary
-  Scenario Outline: Reject invalid Login Details input and keep the form unsaved
+  @login-details @validation
+  Scenario Outline: <TC ID> - Reject invalid Login Details (<Case>)
     Given no user account uses Username "<Username>"
     When I enter employee details:
       | First Name | QALogin |
@@ -150,35 +151,32 @@ Scenario Outline: Sign-in is allowed only for an Enabled employee account
     Then the "<Error Field>" field shows the "<Message>" error
     And the employee form remains unsaved
 
-    @AE_N19
-    Examples: Password has no number
-      | Username   | Password  | Confirm Password | Error Field | Message                                    |
-      | qa_auto11  | Qaaaaaaa@ | Qaaaaaaa@         | Password    | Your password must contain minimum 1 number |
+    Examples:
+      | TC ID  | Case                             | Username  | Password  | Confirm Password | Error Field      | Message                                                |
+      | AE_N19 | Password has no number           | qa_auto11 | Qaaaaaaa@ | Qaaaaaaa@        | Password         | Your password must contain minimum 1 number            |
+      | AE_N20 | Password has no lowercase letter | qa_auto12 | 12345678  | 12345678         | Password         | Your password must contain minimum 1 lower-case letter |
+      | AE_N21 | Confirm Password does not match  | qa_auto13 | Qa@12345  | Qa@12346         | Confirm Password | Passwords do not match                                 |
 
-    @AE_N20
-    Examples: Password has no lowercase letter
-      | Username   | Password | Confirm Password | Error Field | Message                                             |
-      | qa_auto12  | 12345678 | 12345678         | Password    | Your password must contain minimum 1 lower-case letter |
+  @login-details @validation @boundary
+  Scenario Outline: <TC ID> - Reject a Login Details boundary value (<Case>)
+    Given no user account uses Username "<Username>"
+    When I enter employee details:
+      | First Name | QALogin |
+      | Last Name  | User    |
+    And I enter login details:
+      | Username         | <Username>         |
+      | Status           | Enabled            |
+      | Password         | <Password>         |
+      | Confirm Password | <Confirm Password> |
+    And I save the employee
+    Then the "<Error Field>" field shows the "<Message>" error
+    And the employee form remains unsaved
 
-    @AE_N21
-    Examples: Confirm Password does not match
-      | Username   | Password | Confirm Password | Error Field      | Message               |
-      | qa_auto13  | Qa@12345 | Qa@12346         | Confirm Password | Passwords do not match |
-
-    @AE_B11
-    Examples: Username has fewer than 5 characters
-      | Username | Password | Confirm Password | Error Field | Message                         |
-      | qa_1     | Qa@12345 | Qa@12345         | Username    | Should be at least 5 characters |
-
-    @AE_B12
-    Examples: Username has more than 40 characters
-      | Username                                  | Password | Confirm Password | Error Field | Message                            |
-      | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Qa@12345 | Qa@12345         | Username    | Should not exceed 40 characters |
-
-    @AE_B13
-    Examples: Password has fewer than 7 characters
-      | Username   | Password | Confirm Password | Error Field | Message                         |
-      | qa_auto13b | Qa@1     | Qa@1             | Password    | Should have at least 7 characters |
+    Examples:
+      | TC ID  | Case                            | Username                                  | Password | Confirm Password | Error Field | Message                           |
+      | AE_B11 | Username has fewer than 5 chars | qa_1                                      | Qa@12345 | Qa@12345         | Username    | Should be at least 5 characters   |
+      | AE_B12 | Username has more than 40 chars | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Qa@12345 | Qa@12345         | Username    | Should not exceed 40 characters   |
+      | AE_B13 | Password has fewer than 7 chars | qa_auto13b                                | Qa@1     | Qa@1             | Password    | Should have at least 7 characters |
 
   @login-details @validation @AE_L04
   Scenario: Turning off Create Login Details prevents account creation

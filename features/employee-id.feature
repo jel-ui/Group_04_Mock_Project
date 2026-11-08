@@ -16,9 +16,8 @@ Feature: Employee Id
     And the employee form remains unsaved
 
 #---------- Employee Id ----------
-
-  @employee-id
-  Scenario Outline: Save an employee with a custom Employee Id
+  @employee-id @positive
+  Scenario Outline: <TC ID> - Save an employee with a custom Employee Id (<Case>)
     Given no employee uses Employee Id "<Employee Id>"
     When I enter employee details:
       | First Name  | <First Name>  |
@@ -27,20 +26,20 @@ Feature: Employee Id
     And I save the employee
     Then the employee profile shows the submitted details
 
-    @AE_P06 @positive
-    Examples: Employee Id is set by the user
-      | First Name | Last Name | Employee Id |
-      | QAAn       | Nguyen    | 9102        |
+    Examples:
+      | TC ID  | Case                                 | First Name | Last Name | Employee Id |
+      | AE_P06 | User enters a numeric Employee Id    | QAAn       | Nguyen    | 9102        |
+      | AE_P08 | Employee Id contains letters/numbers | QAIdAlpha  | Test      | QA9a01      |
 
-    @AE_P08
-    Examples: Employee Id contains letters and digits
-      | First Name | Last Name | Employee Id |
-      | QAIdAlpha  | Test      | QA9a01      |
-
-    @AE_B07
-    Examples: Employee Id has exactly 10 characters
-      | First Name | Last Name | Employee Id |
-      | QAId10     | Test      | 0123456789  |
+  @employee-id @positive @boundary @AE_B07
+  Scenario: AE_B07 - Save an Employee Id with exactly 10 characters
+    Given no employee uses Employee Id "0123456789"
+    When I enter employee details:
+      | First Name  | QAId10     |
+      | Last Name   | Test       |
+      | Employee Id | 0123456789 |
+    And I save the employee
+    Then the employee profile shows the submitted details
 
   @employee-id @AE_P07
   Scenario: Suggest a new Employee Id after an employee is saved
@@ -66,7 +65,6 @@ Feature: Employee Id
     When I change the Employee Id to "91002"
     And I save the employee
     Then the employee profile shows the submitted details
-
 @employee-id @boundary @AE_B08
 Scenario: Reject an Employee Id longer than 10 characters
   When I enter First Name "QAId", Last Name "Len" and Employee Id "12345678901"

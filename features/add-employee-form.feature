@@ -48,39 +48,32 @@ Feature: Add Employee form
     And I save the employee
     Then the employee profile shows the submitted details
     And the "Employee Id" field has the value ""
-#----------Validation tên và Employee Id----------
-  # Giá trị để trong ngoặc kép để giữ được dấu cách; "" là không nhập (Employee Id thì giữ Id gợi ý).
+#---------- Validation tên và Employee Id ----------
+  # Mỗi dòng Examples là một lần chạy riêng, ID được đưa vào tên scenario để truy vết.
   @validation
-  Scenario Outline: Show a validation error and keep the form unsaved
+  Scenario Outline: <TC ID> - <Case>
     When I enter First Name <First Name>, Last Name <Last Name> and Employee Id <Employee Id>
     And I save the employee
     Then the fields "<Error Fields>" show the "<Message>" error
     And the employee form remains unsaved
 
-    @AE_N02
-    Examples: First Name and Last Name contain only spaces
-      | First Name | Last Name | Employee Id | Error Fields          | Message  |
-      | "   "      | "   "     | ""          | First Name, Last Name | Required |
+    Examples:
+      | TC ID  | Case                                     | First Name | Last Name | Employee Id | Error Fields          | Message  |
+      | AE_N02 | First and last names contain only spaces | "   "      | "   "     | ""          | First Name, Last Name | Required |
+      | AE_N03 | Last Name is empty                       | "QAOnly"   | ""        | ""          | Last Name             | Required |
+      | AE_N04 | First Name is empty                      | ""         | "QAOnly"  | ""          | First Name            | Required |
 
-    @AE_N03
-    Examples: Last Name is empty
-      | First Name | Last Name | Employee Id | Error Fields | Message  |
-      | "QAOnly"   | ""        | ""          | Last Name    | Required |
+  @validation @boundary
+  Scenario Outline: <TC ID> - <Case>
+    When I enter First Name <First Name>, Last Name <Last Name> and Employee Id <Employee Id>
+    And I save the employee
+    Then the fields "<Error Fields>" show the "<Message>" error
+    And the employee form remains unsaved
 
-    @AE_N04
-    Examples: First Name is empty
-      | First Name | Last Name | Employee Id | Error Fields | Message  |
-      | ""         | "QAOnly"  | ""          | First Name   | Required |
-
-    @AE_B02 @boundary
-    Examples: First Name has 31 characters
-      | First Name                        | Last Name | Employee Id | Error Fields | Message                         |
-      | "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | "Len"     | ""          | First Name   | Should not exceed 30 characters |
-
-    @AE_B06
-    Examples: Last Name has 31 characters
-      | First Name | Last Name                         | Employee Id | Error Fields | Message                         |
-      | "QALast"   | "ccccccccccccccccccccccccccccccc" | ""          | Last Name    | Should not exceed 30 characters |
+    Examples:
+      | TC ID  | Case                         | First Name                        | Last Name                         | Employee Id | Error Fields | Message                         |
+      | AE_B02 | First Name has 31 characters | "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | "Len"                             | ""          | First Name   | Should not exceed 30 characters |
+      | AE_B06 | Last Name has 31 characters  | "QALast"                          | "ccccccccccccccccccccccccccccccc" | ""          | Last Name    | Should not exceed 30 characters |
 
 #---------- Giao diện form ----------
   # Giữ đúng Expected của TC: nếu DOM khác thì scenario FAIL và thông báo lỗi ghi rõ khác biệt.
@@ -116,9 +109,9 @@ Feature: Add Employee form
     And the employee form remains unsaved
 
 #---------- Dữ liệu tên hợp lệ ----------
-  # Chỉ kiểm tra trước là Id chưa có ai dùng.
+  # Các giá trị khác nhau dùng chung luồng lưu hồ sơ.
   @positive
-  Scenario Outline: <Test Case> - Save an employee whose name data is accepted
+  Scenario Outline: <TC ID> - <Case>
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | <First Name>  |
@@ -127,26 +120,16 @@ Feature: Add Employee form
     And I save the employee
     Then the employee profile shows the submitted details
 
-    @AE_P02
-    Examples: First Name contains digits and special characters
-      | Test Case | First Name | Middle Name | Last Name |
-      | AE_P02    | An123@#    |             | Test      |
-
-    @AE_P03
-    Examples: First Name has a space between words
-      | Test Case | First Name | Middle Name | Last Name |
-      | AE_P03    | wang ming  |             | Test      |
-
-    @AE_P04
-    Examples: Name has Vietnamese diacritics
-      | Test Case | First Name | Middle Name | Last Name |
-      | AE_P04    | Lê Minh    |             | Hưng      |
+    Examples:
+      | TC ID  | Case                                   | First Name | Middle Name | Last Name |
+      | AE_P02 | First Name contains digits and symbols | An123@#    |             | Test      |
+      | AE_P03 | First Name contains a space            | wang ming  |             | Test      |
+      | AE_P04 | Names contain Vietnamese diacritics    | Lê Minh    |             | Hưng      |
 
 # ---------- Giới hạn 30 ký tự của họ tên ----------
-  # AE_B02 (First Name 31 ký tự) nằm trong outline validation ở trên vì Expected có "Không lưu".
-
+  # AE_B02 và AE_B06 kiểm tra trường hợp vượt giới hạn; AE_B01, AE_B03 và AE_B05 kiểm tra đúng 30 ký tự.
   @boundary
-  Scenario Outline: <Test Case> - Accept a name with exactly 30 characters
+  Scenario Outline: <TC ID> - <Case>
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | <First Name>  |
@@ -155,20 +138,11 @@ Feature: Add Employee form
     And I save the employee
     Then the employee profile shows the submitted details
 
-    @AE_B01
-    Examples: First Name has exactly 30 characters
-      | Test Case | First Name                     | Middle Name | Last Name |
-      | AE_B01    | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |             | Len       |
-
-    @AE_B03
-    Examples: Middle Name has exactly 30 characters
-      | Test Case | First Name | Middle Name                    | Last Name |
-      | AE_B03    | Le         | bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | Trung     |
-
-    @AE_B05
-    Examples: Last Name has exactly 30 characters
-      | Test Case | First Name | Middle Name | Last Name                      |
-      | AE_B05    | Nguyen     |             | cccccccccccccccccccccccccccccc |
+    Examples:
+      | TC ID  | Case                             | First Name                     | Middle Name                    | Last Name                      |
+      | AE_B01 | First Name has exactly 30 chars  | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |                                | Len                            |
+      | AE_B03 | Middle Name has exactly 30 chars | Le                             | bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | Trung                          |
+      | AE_B05 | Last Name has exactly 30 chars   | Nguyen                         |                                | cccccccccccccccccccccccccccccc |
 
   @boundary @AE_B04
   Scenario: Show the 30-character error for a 31-character Middle Name

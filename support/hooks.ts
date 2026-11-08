@@ -24,10 +24,12 @@ Before(async function (this: CustomWorld) {
     this.initializePages(page);
 });
 
-// Ghi Test Case ID (tag @AE_...) vào report để truy vết từng dòng Examples về test case gốc.
+// Ghi ID từ tag của Scenario hoặc từ tên đã nội suy của từng dòng Scenario Outline.
 Before(function (this: CustomWorld, { pickle }) {
-    const testCaseIds = pickle.tags.map((tag) => tag.name.slice(1)).filter((name) => /^AE_/.test(name));
-    if (testCaseIds.length > 0) this.attach(`Test Case: ${testCaseIds.join(', ')}`, 'text/plain');
+    const taggedIds = pickle.tags.map((tag) => tag.name.slice(1)).filter((name) => /^AE_/.test(name));
+    const namedId = pickle.name.match(/\bAE_[A-Z]\d+\b/)?.[0];
+    const testCaseIds = [...new Set([...taggedIds, ...(namedId ? [namedId] : [])])];
+    if (testCaseIds.length > 0) this.attach('Test Case: ' + testCaseIds.join(', '), 'text/plain');
 });
 
 AfterStep(async function (this: CustomWorld) {
