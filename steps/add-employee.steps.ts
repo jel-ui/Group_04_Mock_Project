@@ -1,6 +1,6 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { createUnusedEmployeeId, deleteEmployeeById, deleteUserByUsername, findEmployeeNumbers } from '../support/testData';
+import { randomEmployeeId } from '../support/testData';
 import { CustomWorld } from '../support/world';
 
 When('I save the employee', async function (this: CustomWorld) {
@@ -36,23 +36,28 @@ Then('the success toast is shown', async function (this: CustomWorld) {
 });
 
 // ---------- Chuẩn bị và dọn dữ liệu cố định ----------
+// Dọn dữ liệu trên giao diện: Employee List / Admin > System Users, bấm thùng rác rồi xác nhận xoá.
 
 // Sau khi dọn thì tải lại form để Employee Id gợi ý là mới nhất.
 // Demo dùng chung có người khác thêm nhân viên liên tục, Id gợi ý cũ có thể đã bị lấy mất.
 Given('no employee uses Employee Id {string}', async function (this: CustomWorld, employeeId: string) {
-    await deleteEmployeeById(this.context.request, employeeId);
+    await this.employeeListPage.open();
+    await this.employeeListPage.deleteEmployeesWithId(employeeId);
     await this.addEmployeePage.open();
 });
 
 Given('no user account uses Username {string}', async function (this: CustomWorld, username: string) {
-    await deleteUserByUsername(this.context.request, username);
+    await this.systemUsersPage.open();
+    await this.systemUsersPage.deleteUsersByUsername(username);
     await this.addEmployeePage.open();
 });
 
 // Tạo nhân viên nền nếu demo chưa có Id này, rồi quay lại form Add Employee trống.
 Given('an employee with Employee Id {string} exists', async function (this: CustomWorld, employeeId: string) {
-    const existing = await findEmployeeNumbers(this.context.request, employeeId);
-    if (existing.length > 0) return;
+    await this.employeeListPage.open();
+    const existing = await this.employeeListPage.countEmployeesWithId(employeeId);
+    await this.addEmployeePage.open();
+    if (existing > 0) return;
 
     await this.addEmployeePage.enterEmployeeDetails({
         'First Name': 'QAAn',
@@ -142,10 +147,19 @@ Then('the suggested Employee Id is greater than the noted one', async function (
 
 // ---------- Employee Id duy nhất cho dữ liệu test ----------
 
-// Dùng Employee Id ngẫu nhiên đã kiểm tra qua API cho các test không kiểm tra chính ID gợi ý.
-// Cách này tránh phụ thuộc vào ID gợi ý có thể bị người dùng khác lấy trong lúc CI đang chạy.
+// Dùng Employee Id ngẫu nhiên cho các test không kiểm tra chính ID gợi ý,
+// tránh phụ thuộc vào ID gợi ý có thể bị người dùng khác lấy trong lúc CI đang chạy.
+// Id được tra trước ở Employee List cho chắc là chưa ai dùng.
 Given('I have an unused Employee Id', async function (this: CustomWorld) {
-    const employeeId = await createUnusedEmployeeId(this.context.request);
+    await this.employeeListPage.open();
+    let employeeId = '';
+    for (let attempt = 0; attempt < 3 && !employeeId; attempt++) {
+        const candidate = randomEmployeeId();
+        if (await this.employeeListPage.countEmployeesWithId(candidate) === 0) employeeId = candidate;
+    }
+    if (!employeeId) throw new Error('Could not find an unused Employee Id after 3 attempts.');
+
+    await this.addEmployeePage.open();
     await this.addEmployeePage.enterEmployeeId(employeeId);
 });
 

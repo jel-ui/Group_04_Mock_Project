@@ -85,7 +85,7 @@ Các trường hợp có cùng luồng được gom bằng `Scenario Outline` v�
 | Điều hướng và Employee List | `employee-navigation.feature` | AE_U04, AE_P05, AE_P10, AE_P20, AE_N22 |
 | Chưa đăng nhập mở Add Employee | `login.feature` | AE_L01 |
 
-Dữ liệu test cố định lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (xoá bản ghi trùng qua API OrangeHRM, xem `support/testData.ts`). Ảnh và file mẫu dùng cho các case upload nằm trong `test-data/photos/`.
+Dữ liệu test cố định lấy theo test case. Để chạy lại nhiều lần trên demo dùng chung, scenario nào tạo Employee Id hoặc Username cố định sẽ dọn trước bằng step `Given no employee uses Employee Id "..."` / `Given no user account uses Username "..."` (tìm và xoá bản ghi trùng ngay trên giao diện: PIM > Employee List hoặc Admin > System Users). Ảnh và file mẫu dùng cho các case upload nằm trong `test-data/photos/`.
 
 Test case không ghi Employee Id thì giữ Id gợi ý, nhưng trước khi nhập sẽ chạy `Given the suggested Employee Id is not used yet`: nếu Id gợi ý đã có người dùng thì tải lại form lấy Id mới (tối đa 3 lần).
 
