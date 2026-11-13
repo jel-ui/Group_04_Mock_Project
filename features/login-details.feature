@@ -5,7 +5,7 @@ Feature: Create Login Details
     Given I am logged in and on the Add Employee page
 
   @ui @AE_U02
-  Scenario: Show the login fields after turning on Create Login Details
+  Scenario: AE_U02 - Show the login fields after turning on Create Login Details
     When I turn on Create Login Details
     Then the form fields are shown:
       | Field            | Required |
@@ -17,7 +17,7 @@ Feature: Create Login Details
     And the password hint mentions "upper and lower case characters, symbols and numbers"
 
   @ui @AE_U03
-  Scenario: Select Status Enabled by default
+  Scenario: AE_U03 - Select Status Enabled by default
     When I turn on Create Login Details
     Then the Status "Enabled" is selected
 
@@ -87,7 +87,7 @@ Feature: Create Login Details
       | AE_L03 | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
 
   @login-details @positive @AE_P19
-  Scenario: Verify the new username in User Management
+  Scenario: AE_P19 - Verify the new username in User Management
     Given no user account uses Username "vuviet"
     Given I have an unused Employee Id
     When I enter employee details:
@@ -102,7 +102,7 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the user "vuviet" has status "Enabled" in User Management
   @login-details @validation @AE_N16
-  Scenario: Show employee and Login Details errors at the same time
+  Scenario: AE_N16 - Show employee and Login Details errors at the same time
     When I enter employee details:
       | Last Name | User |
     And I turn on Create Login Details
@@ -112,7 +112,7 @@ Feature: Create Login Details
     And the employee form remains unsaved
 
   @login-details @validation @AE_N17
-  Scenario: Require Username, Password and Confirm Password when login is enabled
+  Scenario: AE_N17 - Require Username, Password and Confirm Password when login is enabled
     When I enter employee details:
       | First Name | QALogin |
       | Last Name  | User    |
@@ -123,7 +123,7 @@ Feature: Create Login Details
     And the employee form remains unsaved
 
   @login-details @validation @AE_N18
-  Scenario: Reject an already registered Username
+  Scenario: AE_N18 - Reject an already registered Username
     When I enter employee details:
       | First Name | QALogin |
       | Last Name  | User    |
@@ -179,7 +179,7 @@ Feature: Create Login Details
       | AE_B13 | Password has fewer than 7 chars | qa_auto13b                                | Qa@1     | Qa@1             | Password    | Should have at least 7 characters |
 
   @login-details @validation @AE_L04
-  Scenario: Turning off Create Login Details prevents account creation
+  Scenario: AE_L04 - Turning off Create Login Details prevents account creation
     Given no user account uses Username "qa_toggle_off04"
     Given I have an unused Employee Id
     When I enter employee details:

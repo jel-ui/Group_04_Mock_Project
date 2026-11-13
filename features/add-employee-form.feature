@@ -5,7 +5,7 @@ Feature: Add Employee form
     Given I am logged in and on the Add Employee page
 
 @AE_P01 @smoke
-  Scenario: Add an employee with the generated Employee Id
+  Scenario: AE_P01 - Add an employee with the generated Employee Id
     When I enter employee details:
       | First Name  | QAHung |
       | Middle Name | M      |
@@ -15,14 +15,14 @@ Feature: Add Employee form
     And the employee profile shows the submitted details
 
   @AE_N01 @validation
-  Scenario: Require First Name and Last Name
+  Scenario: AE_N01 - Require First Name and Last Name
     When I save the employee
     Then the "First Name" field shows the "Required" error
     And the "Last Name" field shows the "Required" error
     And the employee form remains unsaved
 
   @AE_N06 @positive
-  Scenario: Allow saving an employee with an empty Employee Id
+  Scenario: AE_N06 - Allow saving an employee with an empty Employee Id
     When I enter employee details:
       | First Name | QAEmptyID |
       | Last Name  | Test      |
@@ -32,7 +32,7 @@ Feature: Add Employee form
     And the "Employee Id" field has the value ""
 
   @AE_N07 @positive
-  Scenario: Allow duplicate names when Employee Id is empty
+  Scenario: AE_N07 - Allow duplicate names when Employee Id is empty
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QAEmptyID |
@@ -78,7 +78,7 @@ Feature: Add Employee form
 #---------- Giao diện form ----------
   # Giữ đúng Expected của TC: nếu DOM khác thì scenario FAIL và thông báo lỗi ghi rõ khác biệt.
   @ui @AE_U01
-  Scenario: Show the form layout, defaults and photo hint
+  Scenario: AE_U01 - Show the form layout, defaults and photo hint
     Then the profile photo picker is shown
     And the suggested Employee Id is filled in
     And Create Login Details is turned off
@@ -89,7 +89,7 @@ Feature: Add Employee form
 
   # Tự tạo nhân viên có Middle Name (dữ liệu của AE_P01) để chạy độc lập.
   @ui @AE_U05
-  Scenario: Show only First Name and Last Name in the profile heading
+  Scenario: AE_U05 - Show only First Name and Last Name in the profile heading
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name  | QAHung |
@@ -100,7 +100,7 @@ Feature: Add Employee form
     And the "Middle Name" field has the value "M"
 
   @ui @AE_U06
-  Scenario: Keep the valid input after a failed save
+  Scenario: AE_U06 - Keep the valid input after a failed save
     When I enter employee details:
       | First Name | Le |
     And I save the employee
@@ -145,7 +145,7 @@ Feature: Add Employee form
       | AE_B05 | Last Name has exactly 30 chars   | Nguyen                         |                                | cccccccccccccccccccccccccccccc |
 
   @boundary @AE_B04
-  Scenario: Show the 30-character error for a 31-character Middle Name
+  Scenario: AE_B04 - Show the 30-character error for a 31-character Middle Name
     When I enter employee details:
       | First Name  | QAMid                           |
       | Middle Name | bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb |

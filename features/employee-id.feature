@@ -5,7 +5,7 @@ Feature: Employee Id
     Given I am logged in and on the Add Employee page
 
 @AE_N05 @validation
-  Scenario: Reject an Employee Id that is already in use
+  Scenario: AE_N05 - Reject an Employee Id that is already in use
     Given an employee with Employee Id "9102" exists
     When I enter employee details:
       | First Name  | QADup |
@@ -42,7 +42,7 @@ Feature: Employee Id
     Then the employee profile shows the submitted details
 
   @employee-id @AE_P07
-  Scenario: Suggest a new Employee Id after an employee is saved
+  Scenario: AE_P07 - Suggest a new Employee Id after an employee is saved
     When I note the suggested Employee Id
     And I enter employee details:
       | First Name | QANextId |
@@ -53,7 +53,7 @@ Feature: Employee Id
     Then the suggested Employee Id is greater than the noted one
 
   @employee-id @AE_P09
-  Scenario: Save after replacing a duplicate Employee Id with an unused one
+  Scenario: AE_P09 - Save after replacing a duplicate Employee Id with an unused one
     Given an employee with Employee Id "9102" exists
     And no employee uses Employee Id "91002"
     When I enter employee details:
@@ -66,7 +66,7 @@ Feature: Employee Id
     And I save the employee
     Then the employee profile shows the submitted details
 @employee-id @boundary @AE_B08
-Scenario: Reject an Employee Id longer than 10 characters
+Scenario: AE_B08 - Reject an Employee Id longer than 10 characters
   When I enter First Name "QAId", Last Name "Len" and Employee Id "12345678901"
   And I save the employee
   Then the "Employee Id" field shows the "Should not exceed 10 characters" error

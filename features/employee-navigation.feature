@@ -5,7 +5,7 @@ Feature: Employee Navigation
     Given I am logged in and on the Add Employee page
 
 @ui @AE_U04
-  Scenario: Navigate between the PIM tabs and highlight the selected tab
+  Scenario: AE_U04 - Navigate between the PIM tabs and highlight the selected tab
     When I open the PIM menu
     Then the PIM tab "Employee List" is selected and shows the "Employee Information" heading
     When I open the PIM tab "Add Employee"
@@ -14,7 +14,7 @@ Feature: Employee Navigation
     Then the PIM tab "Employee List" is selected and shows the "Employee Information" heading
 
 @employee-list @positive @AE_P05
-  Scenario: Find a newly created employee by Employee Name
+  Scenario: AE_P05 - Find a newly created employee by Employee Name
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | Ba    |
@@ -24,7 +24,7 @@ Feature: Employee Navigation
     And the employee is found in Employee List by Employee Name "Vuong"
 
 @employee-list @positive @AE_P10
-  Scenario: Find a newly created employee by Employee Id
+  Scenario: AE_P10 - Find a newly created employee by Employee Id
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | Le  |
@@ -33,7 +33,7 @@ Feature: Employee Navigation
     Then the employee profile shows the submitted details
     And the Employee List has 1 record for the employee under test
 @employee-list @positive @AE_P20
-  Scenario: Cancel adding an employee and verify no record is created
+  Scenario: AE_P20 - Cancel adding an employee and verify no record is created
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QACancel |
@@ -42,7 +42,7 @@ Feature: Employee Navigation
     Then the employee is absent from Employee List when searched by Employee Name "QACancel"
 
   @employee-list @validation @AE_N22
-  Scenario: Double-clicking Save creates only one employee record
+  Scenario: AE_N22 - Double-clicking Save creates only one employee record
     Given I have an unused Employee Id
     When I enter employee details:
       | First Name | QADouble |
