@@ -82,9 +82,9 @@ Feature: Create Login Details
     And the created employee account login result is "<Login Result>"
 
     Examples:
-      | TC ID  | First Name | Last Name | Username  | Status   | Password | Login Result  |
-      | AE_L02 | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 | signed in     |
-      | AE_L03 | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | not signed in |
+      | TC ID  | First Name | Last Name | Username  | Status   | Password | Login Result     |
+      | AE_L02 | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 | signed in        |
+      | AE_L03 | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | Account disabled |
 
   @login-details @positive @AE_P19
   Scenario: AE_P19 - Verify the new username in User Management

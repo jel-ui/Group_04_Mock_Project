@@ -1,4 +1,5 @@
 import { Then, When } from '@cucumber/cucumber';
+import { expect } from '@playwright/test';
 import { DashboardPage } from '../pages/DashboardPage';
 import { LoginPage } from '../pages/LoginPage';
 import { config } from '../support/config';
@@ -43,7 +44,9 @@ Then('the created employee account login result is {string}', async function (
             await loginPage.expectBlocked();
             return;
         }
+        // Còn lại là nội dung thông báo lỗi (vd. "Account disabled"): phải hiện đúng thông báo và vẫn ở trang Login.
         await loginPage.expectErrorMessage(expectedResult);
+        await expect(page).toHaveURL(/\/auth\/login$/);
     } finally {
         await verificationContext.close();
     }
