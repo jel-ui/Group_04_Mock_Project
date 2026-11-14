@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { PAGE_LOAD_TIMEOUT, PageLoadError, waitForPageLoad } from '../support/pageLoad';
+import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
 export class LoginPage {
     constructor(private readonly page: Page) {}
@@ -31,11 +31,8 @@ export class LoginPage {
         await this.clickLoginAndWaitForResult();
     }
 
-    // Bấm Login khi đã nhập đủ Username/Password: form gửi lên server rồi tải lại trang
-    // (vào Dashboard nếu đúng, quay về Login nếu sai/bị khoá). Chờ trang mới tải xong
-    // để bước kiểm tra sau không chạy lúc server còn chưa trả kết quả.
+    // chờ server trả kết quả login (trang load lại) rồi mới check
     async clickLoginAndWaitForResult() {
-        const start = Date.now();
         const reloaded = this.page.waitForEvent('framenavigated', {
             predicate: (frame) => frame === this.page.mainFrame(),
             timeout: PAGE_LOAD_TIMEOUT
@@ -45,7 +42,7 @@ export class LoginPage {
             await reloaded;
             await this.page.waitForLoadState('domcontentloaded', { timeout: PAGE_LOAD_TIMEOUT });
         } catch {
-            throw new PageLoadError('Login result', Date.now() - start, this.page.url(), 'no response after clicking Login');
+            throw new Error(`[WEBSITE SLOW] Login result did not load. Current URL: ${this.page.url()}`);
         }
     }
 
