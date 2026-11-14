@@ -1,10 +1,12 @@
 import { expect, type Page } from '@playwright/test';
+import { waitForPageLoad } from '../support/pageLoad';
 
 export class DashboardPage {
     constructor(private readonly page: Page) {}
 
     // Demo có lúc chậm, đăng nhập xong mất ~15s mới vào Dashboard.
     async expectVisible() {
+        await waitForPageLoad(this.page, /\/dashboard\/index/, 'Dashboard');
         await expect(this.page).toHaveURL(/\/dashboard\/index/, { timeout: 30000 });
         await expect(this.page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({ timeout: 30000 });
     }

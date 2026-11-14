@@ -1,10 +1,12 @@
 import { expect, type Page } from '@playwright/test';
+import { PAGE_LOAD_TIMEOUT, PageLoadError, waitForPageLoad } from '../support/pageLoad';
 
 export class LoginPage {
     constructor(private readonly page: Page) {}
 
     async open() {
         await this.page.goto('/web/index.php/auth/login');
+        await waitForPageLoad(this.page, /\/auth\/login$/, 'Login page');
     }
 
     async expectVisible() {
@@ -26,7 +28,25 @@ export class LoginPage {
     async login(username: string, password: string) {
         await this.enterUsername(username);
         await this.enterPassword(password);
+        await this.clickLoginAndWaitForResult();
+    }
+
+    // Bấm Login khi đã nhập đủ Username/Password: form gửi lên server rồi tải lại trang
+    // (vào Dashboard nếu đúng, quay về Login nếu sai/bị khoá). Chờ trang mới tải xong
+    // để bước kiểm tra sau không chạy lúc server còn chưa trả kết quả.
+    async clickLoginAndWaitForResult() {
+        const start = Date.now();
+        const reloaded = this.page.waitForEvent('framenavigated', {
+            predicate: (frame) => frame === this.page.mainFrame(),
+            timeout: PAGE_LOAD_TIMEOUT
+        });
         await this.clickLogin();
+        try {
+            await reloaded;
+            await this.page.waitForLoadState('domcontentloaded', { timeout: PAGE_LOAD_TIMEOUT });
+        } catch {
+            throw new PageLoadError('Login result', Date.now() - start, this.page.url(), 'no response after clicking Login');
+        }
     }
 
     async expectErrorMessage(message: string) {
@@ -34,6 +54,7 @@ export class LoginPage {
     }
 
     async expectBlocked() {
+        await waitForPageLoad(this.page, /\/auth\/login$/, 'Login page after sign-in attempt');
         await expect(this.page).toHaveURL(/\/auth\/login$/);
         await this.expectVisible();
 

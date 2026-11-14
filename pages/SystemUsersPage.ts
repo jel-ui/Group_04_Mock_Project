@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { waitForPageLoad } from '../support/pageLoad';
 
 function escapeRegExp(text: string) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -57,6 +58,7 @@ export class SystemUsersPage {
 
     async open() {
         await this.page.goto('/web/index.php/admin/viewSystemUsers');
+        await waitForPageLoad(this.page, /\/admin\/viewSystemUsers$/, 'System Users');
         await expect(this.heading()).toBeVisible();
     }
 

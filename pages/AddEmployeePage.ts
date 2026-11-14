@@ -1,5 +1,6 @@
 import path from 'path';
 import { expect, type Page } from '@playwright/test';
+import { waitForPageLoad } from '../support/pageLoad';
 
 export class AddEmployeePage {
     constructor(private readonly page: Page) {}
@@ -243,6 +244,7 @@ export class AddEmployeePage {
     //---------- Expect ----------
 
     async expectVisible() {
+        await waitForPageLoad(this.page, /\/pim\/addEmployee$/, 'Add Employee');
         await expect(this.page).toHaveURL(/\/pim\/addEmployee$/, { timeout: 30000 });
         await expect(this.heading()).toBeVisible({ timeout: 30000 });
         await expect(this.firstNameInput()).toBeVisible();
@@ -355,6 +357,7 @@ export class AddEmployeePage {
     // Lưu thành công thì chuyển sang trang Personal Details.
     // Demo có lúc chậm (chuyển trang mất ~15s, tải xong dữ liệu ~25s) nên chờ lâu hơn mặc định.
     async expectSaved() {
+        await waitForPageLoad(this.page, /\/pim\/viewPersonalDetails\/empNumber\/\d+/, 'Personal Details (after Save)');
         await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails\/empNumber\/\d+/, { timeout: 60000 });
     }
 

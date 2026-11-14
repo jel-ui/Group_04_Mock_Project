@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { waitForPageLoad } from '../support/pageLoad';
 
 export class EmployeeListPage {
     constructor(private readonly page: Page) {}
@@ -101,6 +102,7 @@ export class EmployeeListPage {
     }
 
     async expectVisible() {
+        await waitForPageLoad(this.page, /\/pim\/viewEmployeeList$/, 'Employee List');
         await expect(this.page).toHaveURL(/\/pim\/viewEmployeeList$/);
         await expect(this.heading()).toBeVisible({ timeout: 30000 });
     }
