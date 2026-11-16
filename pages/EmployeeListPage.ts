@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { waitForPageLoad } from '../support/pageLoad';
+import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
 export class EmployeeListPage {
     constructor(private readonly page: Page) {}
@@ -62,7 +62,7 @@ export class EmployeeListPage {
                 hasNot: this.page.getByRole('cell', { name: employeeId, exact: true })
             })
         ).toHaveCount(0, { timeout: 30000 });
-        await expect(this.recordsLabel()).toBeVisible();
+        await expect(this.recordsLabel()).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
     }
 
     async countEmployeesWithId(employeeId: string) {

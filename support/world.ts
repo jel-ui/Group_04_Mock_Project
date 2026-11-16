@@ -15,11 +15,13 @@ export class CustomWorld extends World {
     addEmployeePage!: AddEmployeePage;
     employeeListPage!: EmployeeListPage;
     personalDetailsPage!: PersonalDetailsPage;
+    scenarioData: Record<string, string> = {};
     // Employee Id của nhân viên đang mở Personal Details.
     employeeId?: string;
 
     initializePages(page: Page) {
         this.page = page;
+        this.scenarioData = {};
         this.loginPage = new LoginPage(page);
         this.dashboardPage = new DashboardPage(page);
         this.addEmployeePage = new AddEmployeePage(page);
