@@ -8,7 +8,7 @@ files = [
     'scripts/run-personal-details.cjs', 'scripts/node-userinfo.cjs', 'scripts/report-personal-details.cjs',
     'scripts/package-personal-details.py', 'docs/personal-details-handover.md',
     'docs/personal-details-last-run.md', 'docs/personal-details-defect-evidence.json',
-    'docs/message-to-lead.md', 'test-results/personal-details.html', 'test-results/personal-details.json',
+    'test-results/personal-details.html', 'test-results/personal-details.json',
     'test-results/personal-details.ndjson', 'test-results/personal-details-run-summary.md'
 ]
 for directory in ('pages', 'support'):
@@ -24,4 +24,5 @@ with ZipFile(output, 'w', ZIP_DEFLATED) as archive:
 with ZipFile(output) as archive:
     assert archive.testzip() is None
     assert not any(n == '.env' or 'node_modules/' in n for n in archive.namelist())
+    assert 'docs/message-to-lead.md' not in archive.namelist()
 print(str(output))

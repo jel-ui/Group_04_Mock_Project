@@ -2,9 +2,9 @@
 
 Phạm vi: **36 case** ED_01–02, ED_20–51, ED_102–103. Framework: Cucumber + Playwright + TypeScript, Page Object riêng cho Personal Details.
 
-File ZIP bàn giao: `deliverables/Khoi-Personal-Details.zip`. File này có source cần để chạy bộ Personal Details, kết quả HTML/JSON, hướng dẫn và nội dung báo lỗi gửi lead. Không có `.env`, thông tin đăng nhập hay node_modules.
+File ZIP bàn giao: `deliverables/Khoi-Personal-Details.zip`. File này có source cần để chạy bộ Personal Details, kết quả HTML/JSON và hướng dẫn chạy. Không có `.env`, thông tin đăng nhập hay node_modules.
 
-Kết quả full run cuối ngày 16/11/2026: **36 scenario, 34 Pass, 2 Fail (ED_47–48), 0 Skip**; 250/252 step Pass. Typecheck và dry-run đạt. Kết quả này xác nhận cả ED_51 và ED_102–103 đã Pass. Hai Fail còn lại có request gửi đúng mã trùng, HTTP 200 và GET đọc lại xác nhận ứng dụng lưu cả hai hồ sơ với mã trùng; xem `personal-details-defect-evidence.json` và `message-to-lead.md`. Không có lỗi thao tác/locator được phát hiện trong lượt cuối; bộ test không được báo là 36/36 Pass.
+Kết quả full run cuối ngày 16/11/2026: **36 scenario, 34 Pass, 2 Fail (ED_47–48), 0 Skip**; 250/252 step Pass. Typecheck và dry-run đạt. Kết quả này xác nhận cả ED_51 và ED_102–103 đã Pass. Hai Fail còn lại có request gửi đúng mã trùng, HTTP 200 và GET đọc lại xác nhận ứng dụng lưu cả hai hồ sơ với mã trùng; xem `personal-details-defect-evidence.json`. Không có lỗi thao tác/locator được phát hiện trong lượt cuối; bộ test không được báo là 36/36 Pass.
 
 ## Chạy lại
 
