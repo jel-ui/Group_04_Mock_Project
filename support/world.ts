@@ -5,6 +5,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { SystemUsersPage } from '../pages/SystemUsersPage';
+import { PersonalDetailsPage } from '../pages/PersonalDetailsPage';
 
 export interface EmployeeRecord {
     firstName: string;
@@ -21,6 +22,7 @@ export class CustomWorld extends World {
     addEmployeePage!: AddEmployeePage;
     employeeListPage!: EmployeeListPage;
     systemUsersPage!: SystemUsersPage;
+    personalDetailsPage!: PersonalDetailsPage;
     employeeUnderTest?: EmployeeRecord;
     createdLoginDetails?: { username: string; password: string };
     // Employee Id gợi ý được ghi lại trước khi lưu (AE_P07).
@@ -33,6 +35,7 @@ export class CustomWorld extends World {
         this.addEmployeePage = new AddEmployeePage(page);
         this.employeeListPage = new EmployeeListPage(page);
         this.systemUsersPage = new SystemUsersPage(page);
+        this.personalDetailsPage = new PersonalDetailsPage(page);
     }
 }
 

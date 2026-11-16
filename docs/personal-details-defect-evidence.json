@@ -1,0 +1,222 @@
+[
+  {
+    "testCase": {
+      "id": "ED_47",
+      "description": "Xác minh Employee Id trùng với mã của nhân viên khác.",
+      "procedure": "1. Ghi nhận Employee Id của nhân viên A. \n2. Mở Personal Details của nhân viên B. \n3. Nhập Employee Id của nhân viên A vào B. \n4. Nhấn Save.",
+      "manualExpected": "Hiển thị \"Employee Id already exists\".",
+      "manualResult": "Fail",
+      "field": "Employee Id",
+      "value": "{duplicate}",
+      "error": "Employee Id already exists"
+    },
+    "actualInput": "K70207",
+    "fixtureEmpNumbers": [
+      460,
+      461
+    ],
+    "note": "Unique IDs preserve input shape and avoid changing existing demo users.",
+    "updates": [
+      {
+        "payload": {
+          "lastName": "TestLast",
+          "firstName": "TestFirst",
+          "middleName": "TestMiddle",
+          "employeeId": "K70207",
+          "otherId": "",
+          "drivingLicenseNo": "",
+          "drivingLicenseExpiredDate": null,
+          "gender": null,
+          "birthday": null
+        },
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 461,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "K70207",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": "",
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      }
+    ],
+    "persistedBeforeCleanup": [
+      {
+        "empNumber": 460,
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 460,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "K70207",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": null,
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      },
+      {
+        "empNumber": 461,
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 461,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "K70207",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": "",
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      }
+    ]
+  },
+  {
+    "testCase": {
+      "id": "ED_48",
+      "description": "Xác minh Employee ID trùng với nhân viên khác nhưng khác chữ hoa/chữ thường.",
+      "procedure": "1. Ghi nhận Employee ID của nhân viên A: AB1234.\n2. Mở Personal Details của nhân viên B.\n3. Nhập Employee ID: ab1234.\n4. Nhấn Save.",
+      "manualExpected": "Hiển thị “Employee Id already exists”.",
+      "manualResult": "Fail",
+      "field": "Employee Id",
+      "value": "{duplicateLower}",
+      "error": "Employee Id already exists"
+    },
+    "actualInput": "k91736",
+    "fixtureEmpNumbers": [
+      462,
+      463
+    ],
+    "note": "Unique IDs preserve input shape and avoid changing existing demo users.",
+    "updates": [
+      {
+        "payload": {
+          "lastName": "TestLast",
+          "firstName": "TestFirst",
+          "middleName": "TestMiddle",
+          "employeeId": "k91736",
+          "otherId": "",
+          "drivingLicenseNo": "",
+          "drivingLicenseExpiredDate": null,
+          "gender": null,
+          "birthday": null
+        },
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 463,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "k91736",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": "",
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      }
+    ],
+    "persistedBeforeCleanup": [
+      {
+        "empNumber": 462,
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 462,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "K91736",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": null,
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      },
+      {
+        "empNumber": 463,
+        "status": 200,
+        "body": {
+          "data": {
+            "empNumber": 463,
+            "lastName": "TestLast",
+            "firstName": "TestFirst",
+            "middleName": "TestMiddle",
+            "employeeId": "k91736",
+            "otherId": "",
+            "drivingLicenseNo": "",
+            "drivingLicenseExpiredDate": null,
+            "gender": null,
+            "maritalStatus": "",
+            "birthday": null,
+            "terminationId": null,
+            "nationality": {
+              "id": null,
+              "name": null
+            }
+          },
+          "meta": [],
+          "rels": []
+        }
+      }
+    ]
+  }
+]

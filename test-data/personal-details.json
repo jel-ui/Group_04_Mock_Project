@@ -1,0 +1,350 @@
+[
+  {
+    "id": "ED_01",
+    "description": "Xác minh giao diện Personal Details được hiển thị đầy đủ.",
+    "procedure": "1. Truy cập PIM → Employee List.\n2. Chọn một nhân viên.\n3. Quan sát giao diện Personal Details.\n4. Kiểm tra các khu vực thông tin trên trang.",
+    "manualExpected": "Hiển thị đầy đủ các trường Employee Full Name, Employee Id, Other Id, Driver's License Number, License Expiry Date, Nationality, Marital Status, Date of Birth và Gender.\nHiển thị khu vực Custom Fields và Attachments.\nHiển thị các nút Save tương ứng.",
+    "manualResult": "Pass"
+  },
+  {
+    "id": "ED_02",
+    "description": "Xác minh các trường trên Personal Details hiển thị đúng dữ liệu đã lưu hoặc giá trị mặc định khi chưa có dữ liệu.",
+    "procedure": "1. Mở Personal Details của nhân viên.\n2. Kiểm tra Employee Full Name, Employee Id.\n3. Kiểm tra giá trị mặc định của những trường chưa có dữ liệu.",
+    "manualExpected": "Các trường có dữ liệu hiển thị đúng giá trị đã lưu.\nNationality và Marital Status hiển thị -- Select -- nếu chưa có dữ liệu.\nGender không có lựa chọn nào được chọn nếu chưa có dữ liệu.\nCác trường chưa có dữ liệu khác được hiển thị trống.",
+    "manualResult": "Pass"
+  },
+  {
+    "id": "ED_20",
+    "description": "Xác minh hệ thống cập nhật First Name với dữ liệu hợp lệ.",
+    "procedure": "1. Nhập First Name: Anh.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\n",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "Anh",
+    "expectedValue": "Anh"
+  },
+  {
+    "id": "ED_21",
+    "description": "Xác minh hệ thống khi First Name bị để trống.",
+    "procedure": "1. Xóa nội dung First Name. \n2. Giữ Last Name có giá trị hợp lệ. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị “Required” màu đỏ dưới First Name.",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "",
+    "error": "Required"
+  },
+  {
+    "id": "ED_22",
+    "description": "Xác minh hệ thống chấp nhận First Name có khoảng trắng giữa các từ.",
+    "procedure": "1. Nhập First Name: Minh Anh.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "Minh Anh",
+    "expectedValue": "Minh Anh"
+  },
+  {
+    "id": "ED_23",
+    "description": "Xác minh hệ thống khi First Name có thể chứa số và ký tự đặc biệt.",
+    "procedure": "1. Nhập First Name: Minh123@#.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "Minh123@#",
+    "expectedValue": "Minh123@#"
+  },
+  {
+    "id": "ED_24",
+    "description": "Xác minh hệ thống First Name chỉ chứa khoảng trắng.",
+    "procedure": "1. Nhập 3 dấu cách vào First Name.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị “Required” màu đỏ dưới First Name.",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "   ",
+    "error": "Required"
+  },
+  {
+    "id": "ED_25",
+    "description": "Xác minh hệ thống xử lý emoji trong First Name.",
+    "procedure": "1. Nhập First Name: An😀.\n2. Giữ Last Name hợp lệ.\n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\nEmoji sẽ đổi thành dấu \"?\".",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "An😀",
+    "expectedValue": "An?"
+  },
+  {
+    "id": "ED_26",
+    "description": "Xác minh hệ thống khi First Name đúng 30 ký tự.",
+    "procedure": "1. Nhập First Name: A x 30. \n2. Giữ Last Name hợp lệ. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\n",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "expectedValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  {
+    "id": "ED_27",
+    "description": "Xác minh hệ thống khi First Name vượt quá 30 ký tự.",
+    "procedure": "1. Nhập First Name: A x 31. \n2. Giữ Last Name hợp lệ. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị “Should not exceed 30 characters” tại First Name.",
+    "manualResult": "Pass",
+    "field": "First Name",
+    "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "error": "Should not exceed 30 characters"
+  },
+  {
+    "id": "ED_28",
+    "description": "Xác minh hệ thống cập nhật Middle Name với dữ liệu hợp lệ.",
+    "procedure": "1. Nhập Middle Name: Van.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\nMiddle Name không hiển thị trong tên nhân viên ở cột trái.",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "Van",
+    "expectedValue": "Van"
+  },
+  {
+    "id": "ED_29",
+    "description": "Xác minh hệ thống để trống Middle Name.",
+    "procedure": "1. Xóa nội dung Middle Name.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "",
+    "expectedValue": ""
+  },
+  {
+    "id": "ED_30",
+    "description": "Xác minh hệ thống chấp nhận Middle Name có khoảng trắng giữa các từ.",
+    "procedure": "1. Nhập Middle Name: Thi Van.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "Thi Van",
+    "expectedValue": "Thi Van"
+  },
+  {
+    "id": "ED_31",
+    "description": "Xác minh hệ thống khi Middle Name có thể chứa số và ký tự đặc biệt.",
+    "procedure": "1. Nhập Middle Name: Tuan124@$.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "Tuan124@$",
+    "expectedValue": "Tuan124@$"
+  },
+  {
+    "id": "ED_32",
+    "description": "Xác minh hệ thống xử lý emoji trong Middle Name.",
+    "procedure": "1. Nhập Middle Name: Thi😀.\n2. Giữ First và Last Name hợp lệ.\n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\nEmoji sẽ đổi thành dấu \"?\".",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "Thi😀",
+    "expectedValue": "Thi?"
+  },
+  {
+    "id": "ED_33",
+    "description": "Xác minh hệ thống khi Middle Name đúng 30 ký tự.",
+    "procedure": "1. Giữ First Name và Last Name hợp lệ. \n2. Nhập Middle Name: B x 30. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "expectedValue": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+  },
+  {
+    "id": "ED_34",
+    "description": "Xác minh hệ thống Middle Name vượt quá 30 ký tự.",
+    "procedure": "1. Giữ First Name và Last Name hợp lệ. \n2. Nhập Middle Name: B x 31. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị “Should not exceed 30 characters” tại Middle Name.",
+    "manualResult": "Pass",
+    "field": "Middle Name",
+    "value": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "error": "Should not exceed 30 characters"
+  },
+  {
+    "id": "ED_35",
+    "description": "Xác minh hệ thống cập nhật Last Name với dữ liệu hợp lệ.",
+    "procedure": "1. Nhập Last Name: Nguyen.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "Nguyen",
+    "expectedValue": "Nguyen"
+  },
+  {
+    "id": "ED_36",
+    "description": "Xác minh hệ thống khi Last Name để trống.",
+    "procedure": "1. Giữ First Name hợp lệ. \n2. Xóa nội dung Last Name. \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị “Required” màu đỏ dưới Last Name.",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "",
+    "error": "Required"
+  },
+  {
+    "id": "ED_37",
+    "description": "Xác minh hệ thống chấp nhận Last Name có khoảng trắng giữa các từ.",
+    "procedure": "1. Nhập Last Name: Nguyen Thi.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "Nguyen Thi",
+    "expectedValue": "Nguyen Thi"
+  },
+  {
+    "id": "ED_38",
+    "description": "Xác minh hệ thống khi Last Name có thể chứa số và ký tự đặc biệt.",
+    "procedure": "1. Nhập Last Name: Tung134&*.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "Tung134&*",
+    "expectedValue": "Tung134&*"
+  },
+  {
+    "id": "ED_39",
+    "description": "Xác minh hệ thống Last Name chỉ chứa khoảng trắng.",
+    "procedure": "1. Nhập 3 dấu cách vào Last Name.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị “Required” màu đỏ dưới Last Name.",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "   ",
+    "error": "Required"
+  },
+  {
+    "id": "ED_40",
+    "description": "Xác minh hệ thống xử lý emoji trong Last Name.",
+    "procedure": "1. Nhập Last Name: An😀.\n2. Giữ First Name hợp lệ.\n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".\nEmoji sẽ đổi thành dấu \"?\".",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "An😀",
+    "expectedValue": "An?"
+  },
+  {
+    "id": "ED_41",
+    "description": "Xác minh hệ thống khi Last Name đúng 30 ký tự.",
+    "procedure": "1. Giữ First Name hợp lệ. \n2. Nhập Last Name: C x 30.  \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+    "expectedValue": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+  },
+  {
+    "id": "ED_42",
+    "description": "Xác minh hệ thống khi Last Name vượt quá 30 ký tự.",
+    "procedure": "1. Giữ First Name hợp lệ. \n2. Nhập Last Name: C x 31.  \n3. Nhấn Save.",
+    "manualExpected": "Hiển thị “Should not exceed 30 characters” tại Last Name.",
+    "manualResult": "Pass",
+    "field": "Last Name",
+    "value": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+    "error": "Should not exceed 30 characters"
+  },
+  {
+    "id": "ED_43",
+    "description": "Xác minh Employee ID để trống.",
+    "procedure": "1. Để trống Employee ID.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "",
+    "expectedValue": ""
+  },
+  {
+    "id": "ED_44",
+    "description": "Xác minh cập nhật Employee ID bằng một giá trị chưa được sử dụng trong hệ thống.",
+    "procedure": "1. Nhập Employee ID: 031220.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "{numeric6}",
+    "expectedValue": "{numeric6}"
+  },
+  {
+    "id": "ED_45",
+    "description": "Xác minh Employee ID có thể chứa khoảng trắng.",
+    "procedure": "1. Nhập Employee ID: 031 456.\n2. Nhấn Save.",
+    "manualExpected": "Hệ thống chấp nhận Employee ID chưa tồn tại.\nLưu thành công và hiển thị đúng Employee ID mới.",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "{spaced7}",
+    "expectedValue": "{spaced7}"
+  },
+  {
+    "id": "ED_46",
+    "description": "Xác minh Employee ID chứa cả chữ, số và ký tự đặt biệt.",
+    "procedure": "1. Nhập Employee ID: QA$#70312.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "{symbols9}",
+    "expectedValue": "{symbols9}"
+  },
+  {
+    "id": "ED_47",
+    "description": "Xác minh Employee Id trùng với mã của nhân viên khác.",
+    "procedure": "1. Ghi nhận Employee Id của nhân viên A. \n2. Mở Personal Details của nhân viên B. \n3. Nhập Employee Id của nhân viên A vào B. \n4. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Employee Id already exists\".",
+    "manualResult": "Fail",
+    "field": "Employee Id",
+    "value": "{duplicate}",
+    "error": "Employee Id already exists"
+  },
+  {
+    "id": "ED_48",
+    "description": "Xác minh Employee ID trùng với nhân viên khác nhưng khác chữ hoa/chữ thường.",
+    "procedure": "1. Ghi nhận Employee ID của nhân viên A: AB1234.\n2. Mở Personal Details của nhân viên B.\n3. Nhập Employee ID: ab1234.\n4. Nhấn Save.",
+    "manualExpected": "Hiển thị “Employee Id already exists”.",
+    "manualResult": "Fail",
+    "field": "Employee Id",
+    "value": "{duplicateLower}",
+    "error": "Employee Id already exists"
+  },
+  {
+    "id": "ED_49",
+    "description": "Xác minh Employee ID trùng với nhân viên khác nhưng có khoảng trắng ở đầu và cuối.",
+    "procedure": "1. Ghi nhận Employee ID của nhân viên A: AB1234.\n2. Mở Personal Details của nhân viên B.\n3. Nhập Employee ID: ␣AB1234␣ (có dấu cách đầu và cuối).\n4. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "{duplicatePadded}",
+    "expectedValue": "{duplicatePadded}"
+  },
+  {
+    "id": "ED_50",
+    "description": "Xác minh Employee ID đúng 10 ký tự.",
+    "procedure": "1. Nhập Employee ID: 0860245685.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Successfully Updated\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "{numeric10}",
+    "expectedValue": "{numeric10}"
+  },
+  {
+    "id": "ED_51",
+    "description": "Xác minh Employee ID vượt quá 10 ký tự.",
+    "procedure": "1. Nhập Employee ID: 08602456851.\n2. Nhấn Save.",
+    "manualExpected": "Hiển thị \"Should not exceed 10 characters\".",
+    "manualResult": "Pass",
+    "field": "Employee Id",
+    "value": "08602456851",
+    "error": "Should not exceed 10 characters"
+  },
+  {
+    "id": "ED_102",
+    "description": "Xác minh Save thất bại không làm thay đổi các trường hợp lệ khác (không lưu một phần).",
+    "procedure": "1. Chọn Nationality: Vietnamese.\n2. Xóa nội dung First Name.\n3. Nhấn Save.\n4. Quan sát thông báo.\n5. Tải lại trang (F5).",
+    "manualExpected": "Bước 4: hiển thị “Required” dưới First Name, không có “Successfully Updated”.\nBước 5: First Name giữ giá trị cũ, Nationality vẫn là -- Select --.",
+    "manualResult": "Pass"
+  },
+  {
+    "id": "ED_103",
+    "description": "Xác minh hệ thống hiển thị đồng thời nhiều lỗi và chỉ lưu khi đã sửa hết.",
+    "procedure": "1. Xóa nội dung First Name.\n2. Nhập Employee ID: 08602456851 (11 ký tự).\n3. Nhập Other Id dài 31 ký tự.\n4. Nhấn Save.\n5. Sửa lại cả ba trường thành giá trị hợp lệ.\n6. Nhấn Save.",
+    "manualExpected": "Bước 4: hiển thị đồng thời “Required” (First Name), “Should not exceed 10 characters” (Employee ID), “Should not exceed 30 characters” (Other Id). Không lưu.\nBước 6: hiển thị “Successfully Updated”.",
+    "manualResult": "Pass"
+  }
+]
