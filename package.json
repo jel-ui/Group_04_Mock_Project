@@ -10,7 +10,10 @@
     "test:dry": "cucumber-js --dry-run",
     "typecheck": "tsc --noEmit",
     "install:browsers": "playwright install chromium firefox webkit",
-    "test:personal-details": "cucumber-js --tags \"@personalDetails\""
+    "test:personal-details": "cucumber-js --tags \"@personalDetails\"",
+    "test:personal-identity": "node scripts/run-personal-identity.cjs",
+    "test:personal-identity:dry": "node scripts/run-personal-identity.cjs --dry-run",
+    "report:personal-identity": "node scripts/report-personal-identity.cjs"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

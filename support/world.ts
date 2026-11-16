@@ -5,6 +5,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PersonalDetailsPage } from '../pages/PersonalDetailsPage';
+import { PersonalIdentityPage } from '../pages/PersonalIdentityPage';
 import { testEmployees } from './testData';
 
 export class CustomWorld extends World {
@@ -15,6 +16,7 @@ export class CustomWorld extends World {
     addEmployeePage!: AddEmployeePage;
     employeeListPage!: EmployeeListPage;
     personalDetailsPage!: PersonalDetailsPage;
+    personalIdentityPage!: PersonalIdentityPage;
     scenarioData: Record<string, string> = {};
     // Employee Id của nhân viên đang mở Personal Details.
     employeeId?: string;
@@ -27,6 +29,7 @@ export class CustomWorld extends World {
         this.addEmployeePage = new AddEmployeePage(page);
         this.employeeListPage = new EmployeeListPage(page);
         this.personalDetailsPage = new PersonalDetailsPage(page);
+        this.personalIdentityPage = new PersonalIdentityPage(page);
     }
 
     // Tìm nhân viên theo Employee Id ở Employee List; chưa có (bị xoá trên demo) thì tạo lại.

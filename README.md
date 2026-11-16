@@ -80,3 +80,9 @@ Tag: `@personalDetails` cho cả màn; nhóm `@other-id`, `@license`, `@license-
 - Lưu thành công thì tải lại trang và kiểm tra field vẫn giữ giá trị.
 - Data ngày trong feature viết theo test case (yyyy-dd-mm). Format ngày do Admin cài đặt và có thể bị đổi trên demo, nên `PersonalDetailsPage` đọc format từ placeholder của ô ngày, đổi data sang format đó khi nhập và khi kiểm tra. Câu lỗi ngày sai cũng lấy theo format này.
 - ED_55, ED_65: nhập toàn khoảng trắng, web báo toast "Invalid Parameter".
+
+
+## Personal Details - Name and Employee Id (ED_01-02, ED_20-51, ED_102-103)
+
+Run: `npm.cmd run test:personal-identity`. Dry run: `npm.cmd run test:personal-identity:dry`. Report: `npm.cmd run report:personal-identity`.
+See [handover](docs/personal-identity-handover.md), [results](docs/personal-identity-last-run.md) and [test data](test-data/personal-name-id.json).
