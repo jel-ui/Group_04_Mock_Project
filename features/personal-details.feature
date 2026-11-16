@@ -18,7 +18,7 @@ Feature: Personal Details - Khoi assigned cases
       | ED_23 | Xác minh hệ thống khi First Name có thể chứa số và ký tự đặc biệt. |
       | ED_24 | Xác minh hệ thống First Name chỉ chứa khoảng trắng. |
       | ED_25 | Xác minh hệ thống xử lý emoji trong First Name. |
-      | ED_26 | Xác minh hệ thống khi First Name đúng 30 ký tự. | 
+      | ED_26 | Xác minh hệ thống khi First Name đúng 30 ký tự. |
       | ED_27 | Xác minh hệ thống khi First Name vượt quá 30 ký tự. |
       | ED_28 | Xác minh hệ thống cập nhật Middle Name với dữ liệu hợp lệ. |
       | ED_29 | Xác minh hệ thống để trống Middle Name. |
