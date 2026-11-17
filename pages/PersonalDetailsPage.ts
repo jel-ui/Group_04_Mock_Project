@@ -1,6 +1,13 @@
 import { expect, type Page } from '@playwright/test';
 import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
+// Tên field trên màn hình -> thuộc tính name của input họ tên.
+const NAME_INPUTS: Record<string, string> = {
+    'First Name': 'firstName',
+    'Middle Name': 'middleName',
+    'Last Name': 'lastName'
+};
+
 export class PersonalDetailsPage {
     constructor(private readonly page: Page) {}
 
@@ -16,9 +23,33 @@ export class PersonalDetailsPage {
     }
 
     fieldBox(label: string) {
+        const nameInput = NAME_INPUTS[label];
+        if (nameInput) {
+            // First/Middle/Last Name không có label riêng, mỗi ô là một input-group nằm dưới "Employee Full Name".
+            return this.form().locator('.--name-grouped-field > .oxd-input-group').filter({
+                has: this.page.locator(`input[name="${nameInput}"]`)
+            });
+        }
         return this.form().locator('.oxd-input-group').filter({
             has: this.page.locator('label').getByText(label, { exact: true })
         });
+    }
+
+    fieldLabel(label: string) {
+        return this.form().locator('label').getByText(label, { exact: true });
+    }
+
+    // Tên nhân viên ở cột trái (First + Last Name).
+    employeeName() {
+        return this.page.locator('.orangehrm-edit-employee-name h6');
+    }
+
+    sectionHeading(title: string) {
+        return this.page.getByRole('heading', { name: title, exact: true });
+    }
+
+    customFieldsSaveButton() {
+        return this.page.locator('.orangehrm-custom-fields').getByRole('button', { name: 'Save' });
     }
 
     input(label: string) {
@@ -115,6 +146,30 @@ export class PersonalDetailsPage {
 
     async expectSelectedOption(label: string, option: string) {
         await expect(this.dropdown(label)).toHaveText(option);
+    }
+
+    // Employee Full Name gồm 3 ô First, Middle, Last Name; các field khác kiểm tra label.
+    async expectFieldDisplayed(label: string) {
+        await expect(this.fieldLabel(label)).toBeVisible();
+        if (label === 'Employee Full Name') {
+            for (const nameField of Object.keys(NAME_INPUTS)) await expect(this.input(nameField)).toBeVisible();
+        }
+    }
+
+    async expectSectionDisplayed(title: string) {
+        await expect(this.sectionHeading(title)).toBeVisible();
+    }
+
+    async expectSaveButtons() {
+        await expect(this.saveButton()).toBeVisible();
+        await expect(this.customFieldsSaveButton()).toBeVisible();
+    }
+
+    // Tên ở cột trái là First + Last Name, không có Middle Name.
+    async expectEmployeeNameIsFirstAndLast() {
+        const firstName = await this.input('First Name').inputValue();
+        const lastName = await this.input('Last Name').inputValue();
+        await expect(this.employeeName()).toHaveText(`${firstName} ${lastName}`);
     }
 
     // ---------- Ngày tháng ----------
