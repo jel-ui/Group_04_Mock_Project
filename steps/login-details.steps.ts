@@ -44,7 +44,6 @@ Then('the created employee account login result is {string}', async function (
             await loginPage.expectBlocked();
             return;
         }
-        
         await loginPage.expectErrorMessage(expectedResult);
         await expect(page).toHaveURL(/\/auth\/login$/);
     } finally {
