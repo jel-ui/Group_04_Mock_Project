@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { waitForPageLoad } from '../support/pageLoad';
+import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
 export class EmployeeListPage {
     constructor(private readonly page: Page) {}
@@ -45,8 +45,8 @@ export class EmployeeListPage {
         return this.page.getByText('Successfully Deleted', { exact: true });
     }
 
-    private rowsForEmployeeId(employeeId: string) {
-        return this.page.getByRole('row').filter({
+    rowsForEmployeeId(employeeId: string) {
+        return this.page.locator('.oxd-table-card').filter({
             has: this.page.getByRole('cell', { name: employeeId, exact: true })
         });
     }
@@ -80,7 +80,7 @@ export class EmployeeListPage {
                 hasNot: this.page.getByRole('cell', { name: employeeId, exact: true })
             })
         ).toHaveCount(0, { timeout: 30000 });
-        await expect(this.recordsLabel()).toBeVisible();
+        await expect(this.recordsLabel()).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
     }
 
     async countEmployeesWithId(employeeId: string) {
@@ -136,5 +136,9 @@ export class EmployeeListPage {
 
     async expectEmployeeCount(employeeId: string, count: number) {
         await expect(this.rowsForEmployeeId(employeeId)).toHaveCount(count);
+    }
+
+    async openEmployee(employeeId: string) {
+        await this.rowsForEmployeeId(employeeId).first().click();
     }
 }

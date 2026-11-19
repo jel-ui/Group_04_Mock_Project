@@ -207,6 +207,13 @@ export class AddEmployeePage {
         await this.confirmPasswordInput().fill(confirmPassword);
     }
 
+    async addEmployee(firstName: string, lastName: string, employeeId: string) {
+        await this.firstNameInput().fill(firstName);
+        await this.lastNameInput().fill(lastName);
+        await this.employeeIdInput().fill(employeeId);
+        await this.saveButton().click();
+    }
+
     async clickSave() {
         await this.saveButton().click();
     }

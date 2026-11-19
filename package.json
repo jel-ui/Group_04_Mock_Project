@@ -2,7 +2,7 @@
   "name": "orangehrm-automation",
   "version": "1.0.0",
   "private": true,
-  "description": "Cucumber and Playwright automation framework for OrangeHRM (Login -> PIM > Add Employee).",
+  "description": "Cucumber and Playwright automation framework for OrangeHRM (Login, PIM > Add Employee, PIM > Employee > Personal Details).",
   "scripts": {
     "test": "cucumber-js",
     "test:smoke": "cucumber-js --tags @smoke",
@@ -11,13 +11,14 @@
     "typecheck": "tsc --noEmit",
     "install:browsers": "playwright install chromium firefox webkit",
     "test:add-employee": "cucumber-js --tags \"@addEmployee\"",
-    "test:validation": "cucumber-js --tags \"@validation\"",
-    "test:employee-id": "cucumber-js --tags \"@employee-id\"",
+    "test:validation": "cucumber-js --tags \"@addEmployee and @validation\"",
+    "test:employee-id": "cucumber-js --tags \"@addEmployee and @employee-id\"",
     "test:login-details": "cucumber-js --tags \"@login-details\"",
     "test:photo": "cucumber-js --tags \"@photo\"",
     "test:ui": "cucumber-js --tags \"@ui\"",
-    "test:positive": "cucumber-js --tags \"@positive\"",
-    "test:boundary": "cucumber-js --tags \"@boundary\""
+    "test:positive": "cucumber-js --tags \"@addEmployee and @positive\"",
+    "test:boundary": "cucumber-js --tags \"@addEmployee and @boundary\"",
+    "test:personal-details": "cucumber-js --tags \"@personalDetails\""
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

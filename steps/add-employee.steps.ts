@@ -19,14 +19,6 @@ Then('the employee profile shows the submitted details', async function (this: C
     );
 });
 
-Then('the {string} field shows the {string} error', async function (
-    this: CustomWorld,
-    fieldName: string,
-    message: string
-) {
-    await this.addEmployeePage.expectFieldError(fieldName, message);
-});
-
 Then('the employee form remains unsaved', async function (this: CustomWorld) {
     await this.addEmployeePage.expectNotSaved();
 });
@@ -105,11 +97,6 @@ When('I clear the Employee Id', async function (this: CustomWorld) {
     await this.addEmployeePage.clearEmployeeId();
     if (this.employeeUnderTest) this.employeeUnderTest.employeeId = '';
 });
-When('I change the Employee Id to {string}', async function (this: CustomWorld, employeeId: string) {
-    await this.addEmployeePage.enterEmployeeId(employeeId);
-    if (this.employeeUnderTest) this.employeeUnderTest.employeeId = employeeId;
-});
-
 When('I note the suggested Employee Id', async function (this: CustomWorld) {
     this.notedEmployeeId = await this.addEmployeePage.getEmployeeId();
 });
@@ -234,12 +221,4 @@ Then('the password hint mentions {string}', async function (this: CustomWorld, t
 
 Then('the profile heading is {string}', async function (this: CustomWorld, name: string) {
     await this.addEmployeePage.expectProfileHeading(name);
-});
-
-Then('the {string} field has the value {string}', async function (
-    this: CustomWorld,
-    fieldName: string,
-    value: string
-) {
-    await this.addEmployeePage.expectFieldValue(fieldName, value);
 });
