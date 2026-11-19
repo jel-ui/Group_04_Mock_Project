@@ -138,10 +138,18 @@ export class PersonalAssetsPage {
         await expect(this.addAttachmentHeading()).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
     }
 
+    // Linux không biết MIME của .gitignore, gửi text/plain như trên Windows.
     async uploadAttachment(fileName: string) {
-        await this.attachmentFileInput().setInputFiles(
-            path.join(process.cwd(), 'test-data', 'attachments', fileName)
-        );
+        const filePath = path.join(process.cwd(), 'test-data', 'attachments', fileName);
+        if (!fileName.endsWith('.gitignore')) {
+            await this.attachmentFileInput().setInputFiles(filePath);
+            return;
+        }
+        await this.attachmentFileInput().setInputFiles({
+            name: fileName,
+            mimeType: 'text/plain',
+            buffer: await readFile(filePath)
+        });
     }
 
     async clickEditAttachment(comment: string) {
