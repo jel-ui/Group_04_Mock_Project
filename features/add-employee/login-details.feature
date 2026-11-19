@@ -39,9 +39,14 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the user "<Username>" has status "<Status>" in User Management
 
+    @AE_P11
     Examples:
       | TC ID  | Case            | First Name | Last Name | Username  | Status   | Password |
       | AE_P11 | Status Enabled  | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 |
+
+    @AE_P12
+    Examples:
+      | TC ID  | Case            | First Name | Last Name | Username  | Status   | Password |
       | AE_P12 | Status Disabled | QADisabled | User      | qa_user02 | Disabled | Qa@12345 |
 
   @login-details @positive @boundary
@@ -60,9 +65,14 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the user "<Username>" has status "<Status>" in User Management
 
+    @AE_B09
     Examples:
       | TC ID  | Case                          | First Name | Last Name | Username                                 | Status  | Password  |
       | AE_B09 | Username has minimum 5 chars  | QAId100    | Tester    | AAAAA                                    | Enabled | Qa@123456 |
+
+    @AE_B10
+    Examples:
+      | TC ID  | Case                          | First Name | Last Name | Username                                 | Status  | Password  |
       | AE_B10 | Username has exactly 40 chars | QAId100    | Tester    | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Enabled | Qa@123456 |
 
   @login-details
@@ -81,9 +91,14 @@ Feature: Create Login Details
     Then the employee profile shows the submitted details
     And the created employee account login result is "<Login Result>"
 
+    @AE_L02
     Examples:
       | TC ID  | First Name | Last Name | Username  | Status   | Password | Login Result     |
       | AE_L02 | QALogin    | User      | qa_user01 | Enabled  | Qa@12345 | signed in        |
+
+    @AE_L03
+    Examples:
+      | TC ID  | First Name | Last Name | Username  | Status   | Password | Login Result     |
       | AE_L03 | QADisabled | User      | qa_user02 | Disabled | Qa@12345 | Account disabled |
 
   @login-details @positive @AE_P19
@@ -151,10 +166,19 @@ Feature: Create Login Details
     Then the "<Error Field>" field shows the "<Message>" error
     And the employee form remains unsaved
 
+    @AE_N19
     Examples:
       | TC ID  | Case                             | Username  | Password  | Confirm Password | Error Field      | Message                                                |
       | AE_N19 | Password has no number           | qa_auto11 | Qaaaaaaa@ | Qaaaaaaa@        | Password         | Your password must contain minimum 1 number            |
+
+    @AE_N20
+    Examples:
+      | TC ID  | Case                             | Username  | Password  | Confirm Password | Error Field      | Message                                                |
       | AE_N20 | Password has no lowercase letter | qa_auto12 | 12345678  | 12345678         | Password         | Your password must contain minimum 1 lower-case letter |
+
+    @AE_N21
+    Examples:
+      | TC ID  | Case                             | Username  | Password  | Confirm Password | Error Field      | Message                                                |
       | AE_N21 | Confirm Password does not match  | qa_auto13 | Qa@12345  | Qa@12346         | Confirm Password | Passwords do not match                                 |
 
   @login-details @validation @boundary
@@ -172,10 +196,19 @@ Feature: Create Login Details
     Then the "<Error Field>" field shows the "<Message>" error
     And the employee form remains unsaved
 
+    @AE_B11
     Examples:
       | TC ID  | Case                            | Username                                  | Password | Confirm Password | Error Field | Message                           |
       | AE_B11 | Username has fewer than 5 chars | qa_1                                      | Qa@12345 | Qa@12345         | Username    | Should be at least 5 characters   |
+
+    @AE_B12
+    Examples:
+      | TC ID  | Case                            | Username                                  | Password | Confirm Password | Error Field | Message                           |
       | AE_B12 | Username has more than 40 chars | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Qa@12345 | Qa@12345         | Username    | Should not exceed 40 characters   |
+
+    @AE_B13
+    Examples:
+      | TC ID  | Case                            | Username                                  | Password | Confirm Password | Error Field | Message                           |
       | AE_B13 | Password has fewer than 7 chars | qa_auto13b                                | Qa@1     | Qa@1             | Password    | Should have at least 7 characters |
 
   @login-details @validation @AE_L04

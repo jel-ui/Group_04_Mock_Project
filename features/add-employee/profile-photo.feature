@@ -14,13 +14,34 @@ Feature: Profile Photo
     When I save the employee
     Then the employee form remains unsaved
 
+    @AE_N09
     Examples:
       | TC ID  | Case                         | File             | Message                  |
       | AE_N09 | JPG exceeds 1 MB             | F05_over_1MB.jpg | Attachment Size Exceeded |
+
+    @AE_N11
+    Examples:
+      | TC ID  | Case                         | File             | Message                  |
       | AE_N11 | PNG exceeds 1 MB             | F09_over_1MB.png | Attachment Size Exceeded |
+
+    @AE_N12
+    Examples:
+      | TC ID  | Case                         | File             | Message                  |
       | AE_N12 | GIF exceeds 1 MB             | F10_over_1MB.gif | Attachment Size Exceeded |
+
+    @AE_N13
+    Examples:
+      | TC ID  | Case                         | File             | Message                  |
       | AE_N13 | TXT is not an accepted image | F11_invalid.txt  | File type not allowed    |
+
+    @AE_N14
+    Examples:
+      | TC ID  | Case                         | File             | Message                  |
       | AE_N14 | SVG is not an accepted image | F12_invalid.svg  | File type not allowed    |
+
+    @AE_N15
+    Examples:
+      | TC ID  | Case                         | File             | Message                  |
       | AE_N15 | PDF is not an accepted image | F06_document.pdf | File type not allowed    |
 
   @photo @positive @boundary
@@ -35,9 +56,14 @@ Feature: Profile Photo
     Then the employee profile shows the submitted details
     And the saved employee photo is shown
 
+    @AE_N08
     Examples:
       | TC ID  | Case                | File              |
       | AE_N08 | JPG is exactly 1 MB | F07_exact_1MB.jpg |
+
+    @AE_N10
+    Examples:
+      | TC ID  | Case                | File              |
       | AE_N10 | PNG is exactly 1 MB | F08_exact_1MB.png |
 
   @photo @positive
@@ -52,11 +78,32 @@ Feature: Profile Photo
     Then the employee profile shows the submitted details
     And the saved employee photo is shown
 
+    @AE_P13
     Examples:
       | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P13 | Save without a photo                 | NONE                     | no photo             | default       |
+
+    @AE_P14
+    Examples:
+      | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P14 | Accept a valid JPG photo             | F04_valid.jpg            | JPG photo            | uploaded      |
+
+    @AE_P15
+    Examples:
+      | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P15 | Accept a valid PNG photo             | F13_valid.png            | PNG photo            | uploaded      |
+
+    @AE_P16
+    Examples:
+      | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P16 | Accept a valid GIF photo             | F14_valid.gif            | GIF photo            | uploaded      |
+
+    @AE_P17
+    Examples:
+      | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P17 | Accept a 200 by 200 pixel photo      | F15_200x200.png          | 200 by 200 photo     | uploaded      |
+
+    @AE_P18
+    Examples:
+      | TC ID  | Case                                 | File                     | Photo State          | Preview State |
       | AE_P18 | Accept a photo with other dimensions | F16_other_dimensions.png | non-200 by 200 photo | uploaded      |

@@ -42,6 +42,9 @@ Tạo file `.env` từ mẫu rồi điền tài khoản:
 | ORANGEHRM_PASSWORD | Mật khẩu | (bắt buộc) |
 | BROWSER | chromium / firefox / webkit | chromium |
 | HEADLESS | true = chạy ẩn, false = mở trình duyệt | false (true trên CI) |
+| FEATURES | Chỉ chạy các file feature này, ví dụ `features/login/**/*.feature` | tất cả |
+| STEP_TIMEOUT, ACTION_TIMEOUT, NAVIGATION_TIMEOUT, PAGE_LOAD_TIMEOUT | Thời gian chờ (ms) | 120000, 30000, 60000, 60000 |
+| TRACE_ON_FAILURE | true = lưu trace của scenario fail vào `test-results/traces` | false (true trên CI) |
 
 ## Quản lý thông tin đăng nhập
 
@@ -64,7 +67,7 @@ Tạo file `.env` từ mẫu rồi điền tài khoản:
 Chạy theo tag hoặc theo ID:
 
     npx cucumber-js --tags "@license-expiry and @validation"
-    npx cucumber-js --name "ED_71"
+    npx cucumber-js --tags "@ED_71"
 
 Scenario gắn `@known-defect` (lỗi của site, hiện là ED_47) không chạy mặc định. Mỗi scenario fail được chạy lại 1 lần.
 
@@ -73,6 +76,12 @@ Scenario gắn `@known-defect` (lỗi của site, hiện là ED_47) không chạ
 Mở báo cáo sau khi chạy:
 
     start .\test-results\cucumber-report.html
+
+Xem trace của scenario fail:
+
+    npx playwright show-trace test-results\traces\<tên scenario>.zip
+
+Trên GitHub Actions, 3 màn hình login, add-employee, personal-details chạy song song ở 3 job. Mỗi job có artifact `cucumber-report-<màn hình>` gồm báo cáo HTML và trace.
 
 Before hook ghi Test Case ID vào report HTML: Scenario thường lấy ID từ tag (`@AE_...`, `@ED_...`), còn Scenario Outline lấy ID từ tên scenario đã nội suy.
 
@@ -107,13 +116,9 @@ Chạy theo nhóm (chỉ trong Add Employee):
     npm run test:positive
     npm run test:boundary
 
-Chạy riêng một dòng `Examples` theo ID:
+Mỗi dòng `Examples` có tag ID riêng, nên lọc được như scenario thường:
 
-    npx cucumber-js --name "AE_N02"
-
-Scenario thường vẫn lọc bằng tag:
-
-    npx cucumber-js --tags "@AE_N01"
+    npx cucumber-js --tags "@AE_N02"
 
 ## Sprint 2: Personal Details
 

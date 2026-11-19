@@ -57,10 +57,19 @@ Feature: Add Employee form
     Then the fields "<Error Fields>" show the "<Message>" error
     And the employee form remains unsaved
 
+    @AE_N02
     Examples:
       | TC ID  | Case                                     | First Name | Last Name | Employee Id | Error Fields          | Message  |
       | AE_N02 | First and last names contain only spaces | "   "      | "   "     | ""          | First Name, Last Name | Required |
+
+    @AE_N03
+    Examples:
+      | TC ID  | Case                                     | First Name | Last Name | Employee Id | Error Fields          | Message  |
       | AE_N03 | Last Name is empty                       | "QAOnly"   | ""        | ""          | Last Name             | Required |
+
+    @AE_N04
+    Examples:
+      | TC ID  | Case                                     | First Name | Last Name | Employee Id | Error Fields          | Message  |
       | AE_N04 | First Name is empty                      | ""         | "QAOnly"  | ""          | First Name            | Required |
 
   @validation @boundary
@@ -70,9 +79,14 @@ Feature: Add Employee form
     Then the fields "<Error Fields>" show the "<Message>" error
     And the employee form remains unsaved
 
+    @AE_B02
     Examples:
       | TC ID  | Case                         | First Name                        | Last Name                         | Employee Id | Error Fields | Message                         |
       | AE_B02 | First Name has 31 characters | "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | "Len"                             | ""          | First Name   | Should not exceed 30 characters |
+
+    @AE_B06
+    Examples:
+      | TC ID  | Case                         | First Name                        | Last Name                         | Employee Id | Error Fields | Message                         |
       | AE_B06 | Last Name has 31 characters  | "QALast"                          | "ccccccccccccccccccccccccccccccc" | ""          | Last Name    | Should not exceed 30 characters |
 
 #---------- Giao diện form ----------
@@ -120,10 +134,19 @@ Feature: Add Employee form
     And I save the employee
     Then the employee profile shows the submitted details
 
+    @AE_P02
     Examples:
       | TC ID  | Case                                   | First Name | Middle Name | Last Name |
       | AE_P02 | First Name contains digits and symbols | An123@#    |             | Test      |
+
+    @AE_P03
+    Examples:
+      | TC ID  | Case                                   | First Name | Middle Name | Last Name |
       | AE_P03 | First Name contains a space            | wang ming  |             | Test      |
+
+    @AE_P04
+    Examples:
+      | TC ID  | Case                                   | First Name | Middle Name | Last Name |
       | AE_P04 | Names contain Vietnamese diacritics    | Lê Minh    |             | Hưng      |
 
 # ---------- Giới hạn 30 ký tự của họ tên ----------
@@ -138,10 +161,19 @@ Feature: Add Employee form
     And I save the employee
     Then the employee profile shows the submitted details
 
+    @AE_B01
     Examples:
       | TC ID  | Case                             | First Name                     | Middle Name                    | Last Name                      |
       | AE_B01 | First Name has exactly 30 chars  | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |                                | Len                            |
+
+    @AE_B03
+    Examples:
+      | TC ID  | Case                             | First Name                     | Middle Name                    | Last Name                      |
       | AE_B03 | Middle Name has exactly 30 chars | Le                             | bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | Trung                          |
+
+    @AE_B05
+    Examples:
+      | TC ID  | Case                             | First Name                     | Middle Name                    | Last Name                      |
       | AE_B05 | Last Name has exactly 30 chars   | Nguyen                         |                                | cccccccccccccccccccccccccccccc |
 
   @boundary @AE_B04

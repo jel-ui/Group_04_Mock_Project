@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
+import { config } from './config';
 
-export const PAGE_LOAD_TIMEOUT = 60_000;
+export const PAGE_LOAD_TIMEOUT = config.pageLoadTimeout;
 
 // lỗi [WEBSITE SLOW] là do web load chậm, không phải do code
 export async function waitForPageLoad(page: Page, url: RegExp, pageName: string) {

@@ -26,9 +26,14 @@ Feature: Employee Id
     And I save the employee
     Then the employee profile shows the submitted details
 
+    @AE_P06
     Examples:
       | TC ID  | Case                                 | First Name | Last Name | Employee Id |
       | AE_P06 | User enters a numeric Employee Id    | QAAn       | Nguyen    | 9102        |
+
+    @AE_P08
+    Examples:
+      | TC ID  | Case                                 | First Name | Last Name | Employee Id |
       | AE_P08 | Employee Id contains letters/numbers | QAIdAlpha  | Test      | QA9a01      |
 
   @employee-id @positive @boundary @AE_B07

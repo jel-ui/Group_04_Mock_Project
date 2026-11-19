@@ -6,7 +6,7 @@ import { CustomWorld } from './world';
 const browserTypes = { chromium, firefox, webkit };
 
 let browser: Browser | undefined;
-setDefaultTimeout(120_000);
+setDefaultTimeout(config.stepTimeout);
 
 BeforeAll(async function () {
     browser = await browserTypes[config.browser].launch({ headless: config.headless });
@@ -18,9 +18,10 @@ Before(async function (this: CustomWorld) {
         baseURL: config.baseUrl,
         viewport: { width: 1366, height: 768 }
     });
+    if (config.traceOnFailure) await this.context.tracing.start({ screenshots: true, snapshots: true });
     const page = await this.context.newPage();
-    page.setDefaultTimeout(30_000);
-    page.setDefaultNavigationTimeout(60_000);
+    page.setDefaultTimeout(config.actionTimeout);
+    page.setDefaultNavigationTimeout(config.navigationTimeout);
     this.initializePages(page);
 });
 
@@ -32,7 +33,7 @@ Before(function (this: CustomWorld, { pickle }) {
     if (testCaseIds.length > 0) this.attach('Test Case: ' + testCaseIds.join(', '), 'text/plain');
 });
 
-After(async function (this: CustomWorld, { result }) {
+After(async function (this: CustomWorld, { pickle, result }) {
     // Chụp một ảnh cuối mỗi scenario để giảm tải so với chụp sau từng step.
     if (this.page && !this.page.isClosed()) {
         try {
@@ -50,6 +51,11 @@ After(async function (this: CustomWorld, { result }) {
         if (result?.status === Status.FAILED) {
             this.attach('Failed at URL: ' + this.page.url(), 'text/plain');
         }
+    }
+    if (this.context && config.traceOnFailure) {
+        const failed = result?.status === Status.FAILED;
+        const name = pickle.name.replace(/[^\w-]+/g, '_').slice(0, 80);
+        await this.context.tracing.stop(failed ? { path: `test-results/traces/${name}.zip` } : {});
     }
     if (this.context) await this.context.close();
 });

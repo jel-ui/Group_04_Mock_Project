@@ -50,15 +50,44 @@ Feature: Personal Details
       Then the "<Field>" field has the value "<Saved Value>"
       And the employee name in the left column shows the First Name and Last Name
 
+      @ED_20
       Examples:
         | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_20 | First Name | letters only                | Anh         | Anh         |
+
+      @ED_22
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_22 | First Name | spaces between words        | Minh Anh    | Minh Anh    |
+
+      @ED_23
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_23 | First Name | digits and special chars    | Minh123@#   | Minh123@#   |
+
+      @ED_25
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_25 | First Name | emoji is saved as "?"       | An😀        | An?         |
+
+      @ED_35
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_35 | Last Name  | letters only                | Nguyen      | Nguyen      |
+
+      @ED_37
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_37 | Last Name  | spaces between words        | Nguyen Thi  | Nguyen Thi  |
+
+      @ED_38
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_38 | Last Name  | digits and special chars    | Tung134&*   | Tung134&*   |
+
+      @ED_40
+      Examples:
+        | TC ID | Field      | Case                        | Value       | Saved Value |
         | ED_40 | Last Name  | emoji is saved as "?"       | An😀        | An?         |
 
     @first-name @last-name @validation
@@ -68,9 +97,14 @@ Feature: Personal Details
       Then the "<Field>" field shows the "Required" error
       And the personal details are not saved
 
+      @ED_21
       Examples:
         | TC ID | Field      |
         | ED_21 | First Name |
+
+      @ED_36
+      Examples:
+        | TC ID | Field      |
         | ED_36 | Last Name  |
 
     @first-name @last-name @validation
@@ -80,9 +114,14 @@ Feature: Personal Details
       Then the "<Field>" field shows the "Required" error
       And the personal details are not saved
 
+      @ED_24
       Examples:
         | TC ID | Field      |
         | ED_24 | First Name |
+
+      @ED_39
+      Examples:
+        | TC ID | Field      |
         | ED_39 | Last Name  |
 
   #---------- Middle Name ----------
@@ -103,11 +142,24 @@ Feature: Personal Details
       When I reload the Personal Details page
       Then the "Middle Name" field has the value "<Saved Value>"
 
+      @ED_29
       Examples:
         | TC ID | Case                     | Value      | Saved Value |
         | ED_29 | empty value              |            |             |
+
+      @ED_30
+      Examples:
+        | TC ID | Case                     | Value      | Saved Value |
         | ED_30 | spaces between words     | Thi Van    | Thi Van     |
+
+      @ED_31
+      Examples:
+        | TC ID | Case                     | Value      | Saved Value |
         | ED_31 | digits and special chars | Tuan124@$  | Tuan124@$   |
+
+      @ED_32
+      Examples:
+        | TC ID | Case                     | Value      | Saved Value |
         | ED_32 | emoji is saved as "?"    | Thi😀      | Thi?        |
 
   #---------- Giới hạn 30 ký tự của họ tên ----------
@@ -119,10 +171,19 @@ Feature: Personal Details
       When I reload the Personal Details page
       Then the "<Field>" field has 30 "<Character>" characters
 
+      @ED_26
       Examples:
         | TC ID | Field       | Character |
         | ED_26 | First Name  | A         |
+
+      @ED_33
+      Examples:
+        | TC ID | Field       | Character |
         | ED_33 | Middle Name | B         |
+
+      @ED_41
+      Examples:
+        | TC ID | Field       | Character |
         | ED_41 | Last Name   | C         |
 
     @first-name @middle-name @last-name @validation @boundary
@@ -132,10 +193,19 @@ Feature: Personal Details
       Then the "<Field>" field shows the "Should not exceed 30 characters" error
       And the personal details are not saved
 
+      @ED_27
       Examples:
         | TC ID | Field       | Character |
         | ED_27 | First Name  | A         |
+
+      @ED_34
+      Examples:
+        | TC ID | Field       | Character |
         | ED_34 | Middle Name | B         |
+
+      @ED_42
+      Examples:
+        | TC ID | Field       | Character |
         | ED_42 | Last Name   | C         |
 
   #---------- Employee Id ----------
@@ -146,14 +216,27 @@ Feature: Personal Details
       Then the message "Successfully Updated" is shown
       And the Employee Id "<Employee Id>" is kept after reloading the page
 
+      @ED_43
       Examples:
         | TC ID | Case                              | Employee Id |
         | ED_43 | empty value                       |             |
+
+      @ED_44
+      Examples:
+        | TC ID | Case                              | Employee Id |
         | ED_44 | value not used by other employee  | 031220      |
+
+      @ED_45
+      Examples:
+        | TC ID | Case                              | Employee Id |
         | ED_45 | contains spaces                   | 031 456     |
+
+      @ED_46
+      Examples:
+        | TC ID | Case                              | Employee Id |
         | ED_46 | letters, digits and special chars | QA$#70312   |
 
-      @boundary
+      @boundary @ED_50
       Examples:
         | TC ID | Case                              | Employee Id |
         | ED_50 | exactly 10 characters             | 0860245685  |
@@ -173,12 +256,13 @@ Feature: Personal Details
       Then the "Employee Id" field shows the "Employee Id already exists" error
       And the personal details are not saved
 
+      @ED_48
       Examples:
         | TC ID | Case                  | Existing Id | Employee Id |
         | ED_48 | different letter case | AB1234      | ab1234      |
 
       # Site vẫn lưu Employee Id trùng y hệt, không báo lỗi.
-      @known-defect
+      @known-defect @ED_47
       Examples:
         | TC ID | Case                  | Existing Id | Employee Id |
         | ED_47 | same value            | 56413       | 56413       |
@@ -204,12 +288,29 @@ Feature: Personal Details
       When I reload the Personal Details page
       Then the "Other Id" field has the value "<Other Id>"
 
+      @ED_52
       Examples:
         | TC ID | Case                            | Other Id     |
         | ED_52 | letters and numbers             | OT7031220    |
+
+      @ED_53
+      Examples:
+        | TC ID | Case                            | Other Id     |
         | ED_53 | empty value                     |              |
+
+      @ED_54
+      Examples:
+        | TC ID | Case                            | Other Id     |
         | ED_54 | contains spaces                 | OT 703 1220  |
+
+      @ED_56
+      Examples:
+        | TC ID | Case                            | Other Id     |
         | ED_56 | contains special characters     | OT@#703-1220 |
+
+      @ED_57
+      Examples:
+        | TC ID | Case                            | Other Id     |
         | ED_57 | same as the employee's own Id   | 56412        |
 
     @validation @ED_55
@@ -258,11 +359,24 @@ Feature: Personal Details
       When I reload the Personal Details page
       Then the "Driver's License Number" field has the value "<License Number>"
 
+      @ED_61
       Examples:
         | TC ID | Case                        | License Number |
         | ED_61 | letters and numbers         | DL7031220      |
+
+      @ED_62
+      Examples:
+        | TC ID | Case                        | License Number |
         | ED_62 | empty value                 |                |
+
+      @ED_63
+      Examples:
+        | TC ID | Case                        | License Number |
         | ED_63 | contains spaces             | DL 703 1220    |
+
+      @ED_64
+      Examples:
+        | TC ID | Case                        | License Number |
         | ED_64 | contains special characters | DL@#703-1220   |
 
     @license @validation @ED_65
@@ -327,13 +441,34 @@ Feature: Personal Details
       Then the "License Expiry Date" field shows the invalid date format error
       And the personal details are not saved
 
+      @ED_71
       Examples:
         | TC ID | Case                         | Date       |
         | ED_71 | day-month-year order         | 31-12-2026 |
+
+      @ED_73
+      Examples:
+        | TC ID | Case                         | Date       |
         | ED_73 | day 31 in February           | 2026-31-02 |
+
+      @ED_76
+      Examples:
+        | TC ID | Case                         | Date       |
         | ED_76 | letters instead of digits    | abcd-ef-gh |
+
+      @ED_77
+      Examples:
+        | TC ID | Case                         | Date       |
         | ED_77 | slash separators             | 2030/15/06 |
+
+      @ED_78
+      Examples:
+        | TC ID | Case                         | Date       |
         | ED_78 | two-digit year               | 30-15-06   |
+
+      @ED_79
+      Examples:
+        | TC ID | Case                         | Date       |
         | ED_79 | 29 February in a common year | 2026-29-02 |
 
     @license-expiry @positive
@@ -342,9 +477,14 @@ Feature: Personal Details
       And I save the personal details
       Then the message "Successfully Updated" is shown
 
+      @ED_74
       Examples:
         | TC ID | Date       |
         | ED_74 | 3000-31-12 |
+
+      @ED_75
+      Examples:
+        | TC ID | Date       |
         | ED_75 | 1100-01-01 |
 
   @nationality @marital-status
@@ -463,10 +603,19 @@ Feature: Personal Details
       And I save the personal details
       Then the message "Successfully Updated" is shown
 
+      @ED_94
       Examples:
         | TC ID | Case                    | Date       |
         | ED_94 | valid past date         | 2000-20-02 |
+
+      @ED_98
+      Examples:
+        | TC ID | Case                    | Date       |
         | ED_98 | future date             | 2030-31-12 |
+
+      @ED_99
+      Examples:
+        | TC ID | Case                    | Date       |
         | ED_99 | very old date           | 1800-01-01 |
 
     @validation
@@ -476,12 +625,29 @@ Feature: Personal Details
       Then the "Date of Birth" field shows the invalid date format error
       And the personal details are not saved
 
+      @ED_95
       Examples:
         | TC ID  | Case                         | Date       |
         | ED_95  | day-month-year order         | 31-12-2025 |
+
+      @ED_97
+      Examples:
+        | TC ID  | Case                         | Date       |
         | ED_97  | day 31 in February           | 2025-31-02 |
+
+      @ED_100
+      Examples:
+        | TC ID  | Case                         | Date       |
         | ED_100 | letters instead of digits    | abcd-ef-gh |
+
+      @ED_101
+      Examples:
+        | TC ID  | Case                         | Date       |
         | ED_101 | slash separators             | 1990/15/06 |
+
+      @ED_102
+      Examples:
+        | TC ID  | Case                         | Date       |
         | ED_102 | 29 February in a common year | 1999-29-02 |
 
   @gender @attachments
@@ -498,9 +664,14 @@ Feature: Personal Details
       When I reload the Personal Details page
       Then the Gender "<Gender>" option is selected
 
+      @ED_103
       Examples:
         | TC ID  | Gender |
         | ED_103 | Male   |
+
+      @ED_104
+      Examples:
+        | TC ID  | Gender |
         | ED_104 | Female |
 
     @positive @ED_105
@@ -521,12 +692,29 @@ Feature: Personal Details
       Then the attachment save message is shown
       And the attachment with comment "<Comment>" is displayed
 
+      @ED_106
       Examples:
         | TC ID  | File Type | File                 | Comment            |
         | ED_106 | TXT       | File_Attachment.txt  | ED106 valid TXT    |
+
+      @ED_107
+      Examples:
+        | TC ID  | File Type | File                 | Comment            |
         | ED_107 | JPG       | ED107_valid.jpg      | ED107 valid JPG    |
+
+      @ED_108
+      Examples:
+        | TC ID  | File Type | File                 | Comment            |
         | ED_108 | PDF       | ED108_valid.pdf      | ED108 valid PDF    |
+
+      @ED_109
+      Examples:
+        | TC ID  | File Type | File                 | Comment            |
         | ED_109 | PNG       | ED109_valid.png      | ED109 valid PNG    |
+
+      @ED_110
+      Examples:
+        | TC ID  | File Type | File                 | Comment            |
         | ED_110 | GIF       | ED110_valid.gif      | ED110 valid GIF    |
 
     @validation @ED_111
@@ -545,12 +733,29 @@ Feature: Personal Details
       Then the attachment upload shows the "<Message>" error
       And the attachment with comment "<Comment>" is not displayed
 
+      @ED_112
       Examples:
         | TC ID  | Case                          | File                      | Comment               | Message                  |
         | ED_112 | SVG attachment                | ED93_invalid.svg          | ED112 invalid SVG     | File type not allowed    |
+
+      @ED_113
+      Examples:
+        | TC ID  | Case                          | File                      | Comment               | Message                  |
         | ED_113 | Executable file               | ED97_executable.exe       | ED113 executable      | File type not allowed    |
+
+      @ED_114
+      Examples:
+        | TC ID  | Case                          | File                      | Comment               | Message                  |
         | ED_114 | HTML file containing a script | ED98_script.html          | ED114 html script     | File type not allowed    |
+
+      @ED_115
+      Examples:
+        | TC ID  | Case                          | File                      | Comment               | Message                  |
         | ED_115 | GITIGNORE file                | ED115_invalid.gitignore   | ED115 gitignore       | Invalid Parameter        |
+
+      @ED_116
+      Examples:
+        | TC ID  | Case                          | File                      | Comment               | Message                  |
         | ED_116 | Attachment larger than 1 MB   | ED94_over_1MB.txt         | ED116 oversized file  | Attachment Size Exceeded |
 
     @validation @ED_117

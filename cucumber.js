@@ -1,5 +1,6 @@
 const common = {
-  paths: ['features/**/*.feature'],
+  // FEATURES=features/login/**/*.feature để chạy riêng một màn hình
+  paths: [process.env.FEATURES || 'features/**/*.feature'],
   retry: 1,
   requireModule: ['tsx/cjs'],
   require: [

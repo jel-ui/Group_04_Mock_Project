@@ -31,10 +31,21 @@ function headless(): boolean {
     return value === 'true' || value === '1';
 }
 
+function milliseconds(name: string, fallback: number): number {
+    const value = Number(process.env[name]?.trim());
+    return value > 0 ? value : fallback;
+}
+
 export const config = {
     baseUrl: (process.env.BASE_URL?.trim() || 'https://opensource-demo.orangehrmlive.com').replace(/\/+$/, ''),
     browser: browserName(),
     headless: headless(),
+    stepTimeout: milliseconds('STEP_TIMEOUT', 120_000),
+    actionTimeout: milliseconds('ACTION_TIMEOUT', 30_000),
+    navigationTimeout: milliseconds('NAVIGATION_TIMEOUT', 60_000),
+    pageLoadTimeout: milliseconds('PAGE_LOAD_TIMEOUT', 60_000),
+    // Lưu trace của scenario fail vào test-results/traces
+    traceOnFailure: process.env.TRACE_ON_FAILURE?.trim().toLowerCase() === 'true',
     // Getter để chỉ báo lỗi thiếu tài khoản khi test thực sự cần đăng nhập.
     get username() {
         return required('ORANGEHRM_USERNAME');

@@ -6,9 +6,16 @@ on:
     branches: [ main, master ]
 jobs:
   test:
+    name: test (${{ matrix.screen }})
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        screen: [login, add-employee, personal-details]
     env:
+      FEATURES: features/${{ matrix.screen }}/**/*.feature
+      TRACE_ON_FAILURE: 'true'
       BASE_URL: https://opensource-demo.orangehrmlive.com
       BROWSER: chromium
       HEADLESS: 'true'
@@ -30,6 +37,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: cucumber-report
-          path: test-results/cucumber-report.html
+          name: cucumber-report-${{ matrix.screen }}
+          path: |
+            test-results/cucumber-report.html
+            test-results/traces/
           retention-days: 30
