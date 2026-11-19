@@ -1,4 +1,4 @@
-import { Given, Then, When } from '@cucumber/cucumber';
+import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { CustomWorld } from '../support/world';
 
 // ---------- Other Id, Driver's License Number ----------
@@ -52,6 +52,14 @@ When('I enter the date {string} in the {string} field', async function (this: Cu
     await this.personalDetailsPage.fillDate(label, date);
 });
 
+When('I enter the date {string} as typed in the {string} field', async function (
+    this: CustomWorld,
+    date: string,
+    label: string
+) {
+    await this.personalDetailsPage.fillDateAsTyped(label, date);
+});
+
 When('I pick Today from the {string} calendar', async function (this: CustomWorld, label: string) {
     await this.personalDetailsPage.pickToday(label);
 });
@@ -76,4 +84,52 @@ When('I select {string} in the {string} dropdown', async function (this: CustomW
 
 Then('the {string} dropdown shows {string}', async function (this: CustomWorld, label: string, option: string) {
     await this.personalDetailsPage.expectSelectedOption(label, option);
+});
+
+When('I type {string} in the {string} dropdown without selecting an option', async function (
+    this: CustomWorld,
+    letter: string,
+    label: string
+) {
+    await this.personalDetailsPage.typeLetterInDropdown(label, letter);
+});
+
+
+Then('the option {string} is visible', async function (this: CustomWorld, option: string) {
+    await this.personalDetailsPage.expectDropdownOptionVisible(option);
+});
+When('I type {string} in the {string} dropdown', async function (
+    this: CustomWorld,
+    letter: string,
+    label: string
+) {
+    await this.personalDetailsPage.selectDropdownOptionByLetter(label, letter);
+});
+
+When('I press {string} twice in the {string} dropdown', async function (
+    this: CustomWorld,
+    letter: string,
+    label: string
+) {
+    const selected = [];
+    selected.push(await this.personalDetailsPage.selectDropdownOptionByLetter(label, letter));
+    selected.push(await this.personalDetailsPage.selectDropdownOptionByLetter(label, letter));
+    this.scenarioData['keyboard-dropdown-selections'] = JSON.stringify(selected);
+});
+
+Then('the keyboard selection cycles through:', async function (this: CustomWorld, values: DataTable) {
+    const saved = this.scenarioData['keyboard-dropdown-selections'];
+    const actual = saved ? JSON.parse(saved) as string[] : undefined;
+    const expected = values.raw().map(([value]) => value);
+    if (!actual || JSON.stringify(actual) !== JSON.stringify(expected)) {
+        throw new Error(`Expected keyboard selections ${expected.join(' -> ')}, received ${actual?.join(' -> ') ?? 'none'}.`);
+    }
+});
+
+Then('the {string} option is unavailable in the {string} dropdown', async function (
+    this: CustomWorld,
+    option: string,
+    label: string
+) {
+    await this.personalDetailsPage.expectDropdownOptionUnavailable(label, option);
 });

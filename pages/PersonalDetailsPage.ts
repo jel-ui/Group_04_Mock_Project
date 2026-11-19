@@ -98,6 +98,10 @@ export class PersonalDetailsPage {
         await this.input(label).fill(await this.toSiteDate(date));
     }
 
+    async fillDateAsTyped(label: string, date: string) {
+        await this.input(label).fill(date);
+    }
+
     async pickToday(label: string) {
         await this.fieldBox(label).locator('.oxd-date-input-icon').click();
         await this.page.locator('.oxd-date-input-link').getByText('Today', { exact: true }).click();
@@ -107,6 +111,30 @@ export class PersonalDetailsPage {
         await this.dropdown(label).click();
         await this.page.getByRole('option', { name: option, exact: true }).click();
         await expect(this.dropdown(label)).toHaveText(option);
+    }
+
+    async typeLetterInDropdown(label: string, letter: string) {
+        await this.dropdown(label).click();
+        await this.page.keyboard.press(letter);
+    }
+
+
+    async expectDropdownOptionVisible(option: string) {
+        await expect(this.page.getByRole('option', { name: option, exact: true })).toBeVisible();
+    }
+
+    async selectDropdownOptionByLetter(label: string, letter: string) {
+        const dropdown = this.dropdown(label);
+        await dropdown.click();
+        await this.page.keyboard.press(letter);
+        await this.page.keyboard.press('Enter');
+        return (await dropdown.innerText()).trim();
+    }
+
+    async expectDropdownOptionUnavailable(label: string, option: string) {
+        await this.dropdown(label).click();
+        await expect(this.page.getByRole('option', { name: option, exact: true })).toHaveCount(0);
+        await this.dropdown(label).press('Escape');
     }
 
     async clickSave() {

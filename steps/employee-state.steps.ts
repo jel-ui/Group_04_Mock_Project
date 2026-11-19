@@ -64,21 +64,6 @@ When('I log out from a second browser tab', async function (this: CustomWorld) {
     await logoutPage.close();
 });
 
-Then('a login page or session-expired message is displayed', async function (this: CustomWorld) {
-    await expect.poll(async () => {
-        // A session timeout can redirect the page while the message is being read.
-        if (/\/auth\/login$/.test(this.page.url())) return true;
-
-        try {
-            const messages = await this.page.locator('.oxd-alert-content-text, .oxd-toast').allTextContents();
-            return messages.some((message) => /session|expired|login/i.test(message));
-        } catch {
-            // Navigation may destroy the current execution context; check the destination URL instead.
-            return /\/auth\/login$/.test(this.page.url());
-        }
-    }, { timeout: 30_000 }).toBe(true);
-});
-
 When('I log in again and reopen employee {string}', async function (this: CustomWorld, employeeId: string) {
     const loginPage = new LoginPage(this.page);
     await loginPage.open();
@@ -105,20 +90,4 @@ Then('the Login page is displayed instead of employee details', async function (
     await expect(this.personalDetailsPage.heading()).toHaveCount(0);
     // The Login page correctly contains a login form; verify the employee form is absent instead.
     await expect(firstNameInput(this.page)).toHaveCount(0);
-});
-
-When('I open Personal Details for the missing employee {string}', async function (
-    this: CustomWorld,
-    employeeId: string
-) {
-    const response = await this.page.goto('/web/index.php/pim/viewPersonalDetails/empNumber/' + employeeId);
-    if (response) expect(response.status()).toBeLessThan(500);
-});
-
-Then('a friendly no-records result is displayed without a server error', async function (this: CustomWorld) {
-    await expect(this.personalDetailsPage.heading()).toHaveCount(0);
-    await expect(this.page.locator('form')).toHaveCount(0);
-    await expect(
-        this.page.getByText(/No Records Found|Bad Request|Not Found|Page not found/i).first()
-    ).toBeVisible({ timeout: 30_000 });
 });

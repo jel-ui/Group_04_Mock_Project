@@ -1,7 +1,30 @@
 {
-  "cucumberautocomplete.steps": [
+  "cucumber.features": [
+    "features/**/*.feature"
+  ],
+  "cucumber.glue": [
     "steps/**/*.steps.ts"
   ],
+  "cucumberautocomplete.steps": [
+    "steps/*.steps.ts"
+  ],
   "cucumberautocomplete.syncfeatures": "features/**/*.feature",
-  "cucumberautocomplete.pureTextSteps": true
+  "cucumberautocomplete.pureTextSteps": true,
+  "editor.semanticTokenColorCustomizations": {
+    "enabled": true,
+    "rules": {
+      "parameter:cucumber": "#4FC1FF"
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "text.gherkin.feature variable.other",
+        "settings": {
+          "foreground": "#4FC1FF",
+          "fontStyle": "bold"
+        }
+      }
+    ]
+  }
 }

@@ -51,6 +51,15 @@ Given('an attachment with comment {string} exists', async function (this: Custom
     await new PersonalAssetsPage(this.page).addAttachmentIfMissing('File_Attachment.txt', comment);
 });
 
+Given('there is no previous attachment with file name {string}', async function (
+    this: CustomWorld,
+    fileName: string
+) {
+    const assets = new PersonalAssetsPage(this.page);
+    await assets.ensureNoAttachmentWithFileName(fileName);
+    this.scenarioData['attachment-count-before'] = String(await assets.attachmentCount());
+});
+
 When('I open the Attachments form', async function (this: CustomWorld) {
     await new PersonalAssetsPage(this.page).openAttachmentForm();
 });
@@ -130,4 +139,56 @@ Then('the attachment list has the same number of records as before adding', asyn
 
 Then('the Attachments section remains available', async function (this: CustomWorld) {
     await new PersonalAssetsPage(this.page).expectAttachmentSectionAvailable();
+});
+
+When('I enter {int} spaces as the attachment comment', async function (this: CustomWorld, count: number) {
+    await new PersonalAssetsPage(this.page).enterAttachmentComment(' '.repeat(count));
+});
+
+Then('the attachment save message is shown', async function (this: CustomWorld) {
+    await new PersonalAssetsPage(this.page).expectAttachmentSaveMessage();
+});
+
+Then('the attachment deletion message is shown', async function (this: CustomWorld) {
+    await new PersonalAssetsPage(this.page).expectAttachmentDeleteMessage();
+});
+
+Then('the attachment upload shows the {string} error', async function (this: CustomWorld, message: string) {
+    await new PersonalAssetsPage(this.page).expectFileTypeOrSizeError(message);
+});
+
+When('I click Edit for the attachment with comment {string}', async function (this: CustomWorld, comment: string) {
+    await new PersonalAssetsPage(this.page).clickEditAttachment(comment);
+});
+
+When('I replace the attachment file with {string}', async function (this: CustomWorld, fileName: string) {
+    await new PersonalAssetsPage(this.page).uploadAttachment(fileName);
+});
+
+When('I click Delete for the attachment with comment {string}', async function (this: CustomWorld, comment: string) {
+    await new PersonalAssetsPage(this.page).clickDeleteAttachment(comment);
+});
+
+When('I download the attachment with comment {string}', async function (this: CustomWorld, comment: string) {
+    this.scenarioData['downloaded-attachment-name'] = await new PersonalAssetsPage(this.page).downloadAttachment(comment);
+});
+
+Then('the downloaded attachment has the file name {string}', async function (this: CustomWorld, fileName: string) {
+    const actual = this.scenarioData['downloaded-attachment-name'];
+    if (actual !== fileName) throw new Error(`Expected downloaded file "${fileName}", received "${actual}".`);
+});
+
+Then('the attachment with comment {string} has file name {string}', async function (
+    this: CustomWorld,
+    comment: string,
+    fileName: string
+) {
+    await new PersonalAssetsPage(this.page).expectAttachmentFileName(comment, fileName);
+});
+
+When('I type the attachment comment {string} in the edit form', async function (
+    this: CustomWorld,
+    comment: string
+) {
+    await new PersonalAssetsPage(this.page).enterEditedAttachmentComment(comment);
 });

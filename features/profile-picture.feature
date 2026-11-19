@@ -1,5 +1,5 @@
 @personalDetails @profile-picture
-Feature: Personal Details - Profile Picture
+Feature: Profile Picture
   As an HR Admin
   I want to update an employee profile picture
   So that the employee profile shows an accepted image

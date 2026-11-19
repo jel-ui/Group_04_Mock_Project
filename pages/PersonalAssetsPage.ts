@@ -1,6 +1,6 @@
 import path from 'path';
 import { readFile } from 'node:fs/promises';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
 export class PersonalAssetsPage {
@@ -103,6 +103,16 @@ export class PersonalAssetsPage {
         return this.attachmentRows().filter({ hasText: comment });
     }
 
+    private rowsWithFileName(fileName: string) {
+        return this.attachmentRows().filter({ hasText: fileName });
+    }
+
+    private rowAction(comment: string, iconClass: string) {
+        return this.rowsWithComment(comment)
+            .locator('button.oxd-icon-button')
+            .filter({ has: this.page.locator(`i.${iconClass}`) });
+    }
+
     private addAttachmentHeading() {
         return this.attachmentSection().getByRole('heading', { name: 'Add Attachment', exact: true });
     }
@@ -134,8 +144,36 @@ export class PersonalAssetsPage {
         );
     }
 
+    async clickEditAttachment(comment: string) {
+        await this.rowAction(comment, 'bi-pencil-fill').click();
+        await expect(this.attachmentSection().getByRole('heading', { name: 'Edit Attachment', exact: true }))
+            .toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
+    }
+
+    async clickDeleteAttachment(comment: string) {
+        await this.rowAction(comment, 'bi-trash').click();
+        await this.expectAttachmentDeletionConfirmation();
+    }
+
+    async downloadAttachment(comment: string) {
+        const [download] = await Promise.all([
+            this.page.waitForEvent('download'),
+            this.rowAction(comment, 'bi-download').click()
+        ]);
+        return download.suggestedFilename();
+    }
+
     async enterAttachmentComment(comment: string) {
         await this.attachmentCommentInput().fill(comment);
+        await expect(this.attachmentCommentInput()).toHaveValue(comment);
+    }
+
+    async enterEditedAttachmentComment(comment: string) {
+        const input = this.attachmentCommentInput();
+        await input.click();
+        await input.press('Control+A');
+        await input.pressSequentially(comment);
+        await expect(input).toHaveValue(comment);
     }
 
     async enterAttachmentCommentWithLength(length: number) {
@@ -162,14 +200,30 @@ export class PersonalAssetsPage {
         });
     }
 
+    async expectAttachmentSaveMessage() {
+        await expect(this.page.locator('.oxd-toast').filter({ hasText: 'Successfully Saved' }))
+            .toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
+    }
+
+    async expectAttachmentDeleteMessage() {
+        await expect(this.page.locator('.oxd-toast').filter({ hasText: 'Successfully Deleted' }))
+            .toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
+    }
+
     async hasAttachmentWithComment(comment: string) {
         return (await this.rowsWithComment(comment).count()) > 0;
     }
 
     async ensureNoAttachmentWithComment(comment: string) {
-        const matchingRows = this.rowsWithComment(comment);
-        const count = await matchingRows.count();
+        await this.removeMatchingAttachmentRows(this.rowsWithComment(comment));
+    }
 
+    async ensureNoAttachmentWithFileName(fileName: string) {
+        await this.removeMatchingAttachmentRows(this.rowsWithFileName(fileName));
+    }
+
+    private async removeMatchingAttachmentRows(matchingRows: Locator) {
+        const count = await matchingRows.count();
         if (count === 0) return;
 
         for (let index = 0; index < count; index++) {
@@ -201,6 +255,10 @@ export class PersonalAssetsPage {
 
     async expectNoAttachmentWithComment(comment: string) {
         await expect(this.rowsWithComment(comment)).toHaveCount(0, { timeout: PAGE_LOAD_TIMEOUT });
+    }
+
+    async expectAttachmentFileName(comment: string, fileName: string) {
+        await expect(this.rowsWithComment(comment)).toContainText(fileName, { timeout: PAGE_LOAD_TIMEOUT });
     }
 
     async selectAttachmentWithComment(comment: string) {

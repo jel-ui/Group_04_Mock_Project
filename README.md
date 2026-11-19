@@ -5,7 +5,9 @@ Sprint 2: màn **PIM > Employee > Personal Details**.
 
 ## Cấu trúc
 
-- features/: các file Gherkin, mỗi phần một file riêng (tiền tố `personal-`). `login.feature` chứa kiểm thử đăng nhập chung.
+- `features/login.feature`: các testcase đăng nhập.
+- `features/personal-details.feature`: các testcase thuộc màn Personal Details, được nhóm bằng `Rule`.
+- `features/profile-picture.feature`: các testcase đổi và kiểm tra ảnh đại diện.
 - steps/: step definitions.
   - `login.steps.ts`: các bước đăng nhập.
   - `personal-details.steps.ts`: step dùng chung của màn Personal Details (mở trang, Save, toast, lỗi field).
@@ -64,33 +66,19 @@ Chạy riêng một dòng `Examples` theo ID:
 2. Thêm hàm thao tác vào `pages/PersonalDetailsPage.ts` (hoặc Page Object mới, khai báo trong `support/world.ts`).
 3. Viết step trong file `steps/*.steps.ts` riêng của phần mình.
 
-## Other Id, Driver's License, ngày, Nationality, Marital Status (ED_52–ED_87)
+## Feature files và dải Test Case ID
 
-| Nhóm | File | Test case |
-| --- | --- | --- |
-| Other Id | `personal-other-id.feature` | ED_52–ED_60 |
-| Driver's License Number, License Expiry Date | `personal-license.feature` | ED_61–ED_76 |
-| Nationality, Marital Status | `personal-nationality-marital.feature` | ED_77–ED_78 |
-| Date of Birth | `personal-date-of-birth.feature` | ED_79–ED_87 |
+| Feature | Phạm vi |
+| --- | --- |
+| `login.feature` | Các testcase đăng nhập |
+| `personal-details.feature` | Personal Details: ED_01–02 và ED_20–136 |
+| `profile-picture.feature` | Ảnh đại diện: ED_03–19 |
 
-Tag: `@personalDetails` cho cả màn; nhóm `@other-id`, `@license`, `@license-expiry`, `@nationality`, `@marital-status`, `@date-of-birth`; loại `@positive`, `@validation`, `@boundary`. Scenario thường có thêm tag ID (`@ED_55`), dòng Examples có ID trong tên scenario.
+Trong `personal-details.feature`, các khu vực được nhóm bằng `Rule`: Employee Name/Id, Other Id, License, Nationality/Marital Status, Date of Birth, Gender/Attachments và trạng thái lưu/truy cập. ID được ghi trong tên scenario hoặc từng dòng `Examples`, để report giữ được mã testcase của Excel.
 
-- Nhân viên test là `Shii Chan` (Employee Id `56412`). Demo dùng chung nên nhân viên có thể bị xoá, step mở Personal Details sẽ tìm theo Id ở Employee List và tự tạo lại nếu không còn.
-- ED_58 và ED_66 cần một nhân viên khác (`Shii Neko`, `56413`) đã có Other Id / Driver's License Number trùng giá trị nhập.
-- Lưu thành công thì tải lại trang và kiểm tra field vẫn giữ giá trị.
-- Data ngày trong feature viết theo test case (yyyy-dd-mm). Format ngày do Admin cài đặt và có thể bị đổi trên demo, nên `PersonalDetailsPage` đọc format từ placeholder của ô ngày, đổi data sang format đó khi nhập và khi kiểm tra. Câu lỗi ngày sai cũng lấy theo format này.
-- ED_55, ED_65: nhập toàn khoảng trắng, web báo toast "Invalid Parameter".
+Tag `@personalDetails` lọc toàn bộ testcase của màn này; có thể lọc theo tag chức năng như `@license-expiry`, `@nationality`, `@date-of-birth`, `@attachments`, hoặc theo ID như `@ED_131`. Các testcase trong `profile-picture.feature` có thể lọc bằng `@profile-picture`.
 
-## Họ tên, Employee Id, giao diện (ED_01–ED_02, ED_20–ED_51, ED_102–ED_103)
-
-File: `personal-name-id.feature`. Tag: `@name-employee-id`; nhóm `@layout`, `@first-name`, `@middle-name`, `@last-name`, `@employee-id`, `@save-behaviour`.
-
-    npx cucumber-js --tags "@name-employee-id"
-
-- Nhân viên test là `Shii Kumo` (Employee Id `56415`).
-- ED_02 tạo một nhân viên mới (`Shii Moi`, Employee Id `ED` + 8 số cuối timestamp) để kiểm tra giá trị mặc định.
-- ED_47 dùng nhân viên `56413`; ED_48, ED_49 dùng nhân viên A có Employee Id `AB1234` (tự tạo nếu chưa có).
-- Step `I change the Employee Id to ...` ghi lại Employee Id gốc; After hook trả Employee Id về `56415` sau scenario (mở tab riêng nên ảnh chụp cuối vẫn là màn hình lúc test kết thúc).
-- First/Middle/Last Name không có label riêng; `PersonalDetailsPage.fieldBox()` tìm theo `name` của input nên các step chung (`I enter ... in the "First Name" field`, `the "First Name" field shows the ... error`) dùng được cho họ tên.
-- ED_25, ED_32, ED_40: emoji được lưu thành dấu `?` theo kết quả manual test.
-- ED_47, ED_48 manual test đang Fail (hệ thống lúc cho trùng Employee Id), automation giữ kết quả mong đợi theo BA (VR-03).
+- Nhân viên test dùng trong các nhóm là `56412`, `56414` hoặc `56415` theo Background của từng `Rule`. ED_02 tạo nhân viên mới với Employee Id tự sinh.
+- ED_58 và ED_66 cần dữ liệu của nhân viên phụ để kiểm tra giá trị định danh trùng.
+- Data ngày trong feature theo định dạng testcase `yyyy-dd-mm`; `PersonalDetailsPage` đổi sang định dạng đang cấu hình trên OrangeHRM khi nhập và kiểm tra.
+- File upload cho testcase nằm dưới `test-data/attachments/` và `test-data/profile-pictures/`.
