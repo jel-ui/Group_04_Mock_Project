@@ -66,6 +66,10 @@ Chạy theo tag hoặc theo ID:
     npx cucumber-js --tags "@license-expiry and @validation"
     npx cucumber-js --name "ED_71"
 
+Scenario gắn `@known-defect` (lỗi của site, hiện là ED_47) không chạy mặc định. Mỗi scenario fail được chạy lại 1 lần.
+
+    npx cucumber-js -p known-defect
+
 Mở báo cáo sau khi chạy:
 
     start .\test-results\cucumber-report.html

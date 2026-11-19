@@ -112,9 +112,7 @@ When('I press {string} twice in the {string} dropdown', async function (
     letter: string,
     label: string
 ) {
-    const selected = [];
-    selected.push(await this.personalDetailsPage.selectDropdownOptionByLetter(label, letter));
-    selected.push(await this.personalDetailsPage.selectDropdownOptionByLetter(label, letter));
+    const selected = await this.personalDetailsPage.focusDropdownOptionsByLetter(label, letter, 2);
     this.scenarioData['keyboard-dropdown-selections'] = JSON.stringify(selected);
 });
 

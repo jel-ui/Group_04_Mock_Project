@@ -115,7 +115,7 @@ export class PersonalDetailsPage {
 
     async typeLetterInDropdown(label: string, letter: string) {
         await this.dropdown(label).click();
-        await this.page.keyboard.press(letter);
+        await this.page.keyboard.press(letter.toLowerCase());
     }
 
 
@@ -126,9 +126,20 @@ export class PersonalDetailsPage {
     async selectDropdownOptionByLetter(label: string, letter: string) {
         const dropdown = this.dropdown(label);
         await dropdown.click();
-        await this.page.keyboard.press(letter);
+        await this.page.keyboard.press(letter.toLowerCase());
         await this.page.keyboard.press('Enter');
         return (await dropdown.innerText()).trim();
+    }
+
+    async focusDropdownOptionsByLetter(label: string, letter: string, times: number) {
+        await this.dropdown(label).click();
+        const focused = [];
+        for (let i = 0; i < times; i++) {
+            await this.page.keyboard.press(letter.toLowerCase());
+            focused.push((await this.page.locator('.oxd-select-option.--focused').innerText()).trim());
+        }
+        await this.page.keyboard.press('Escape');
+        return focused;
     }
 
     async expectDropdownOptionUnavailable(label: string, option: string) {

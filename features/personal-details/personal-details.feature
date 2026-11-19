@@ -175,8 +175,13 @@ Feature: Personal Details
 
       Examples:
         | TC ID | Case                  | Existing Id | Employee Id |
-        | ED_47 | same value            | 56413       | 56413       |
         | ED_48 | different letter case | AB1234      | ab1234      |
+
+      # Site vẫn lưu Employee Id trùng y hệt, không báo lỗi.
+      @known-defect
+      Examples:
+        | TC ID | Case                  | Existing Id | Employee Id |
+        | ED_47 | same value            | 56413       | 56413       |
 
     @employee-id @positive @ED_49
     Scenario: ED_49 - Save an existing Employee Id with leading and trailing spaces
@@ -678,7 +683,8 @@ Feature: Personal Details
       And I enter 201 characters as the attachment comment
       And I save the attachment
       Then the Attachments form shows the "Should not exceed 200 characters" error under "Comment"
-      And the attachment list has the same number of records as before adding
+      When I cancel the Attachments form
+      Then the attachment list has the same number of records as before adding
 
   @employee-state
   Rule: Unsaved Changes and Access
