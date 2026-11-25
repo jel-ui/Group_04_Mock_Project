@@ -114,8 +114,6 @@ Feature: Employee List
     Then no result is marked "(Past Employee)"
     And the Records Found count equals the number of "Current Employees Only" employees in PIM
 
-  # Các scenario @employee-list-data dùng nhân viên tạo bằng UI trong support/employeeListData.ts:
-  # 56422 Shii Senpai là Supervisor của 56423 Shii Kouhai, 56421 Shii Yorukawa đã nghỉ việc.
   @include @positive @employee-list-data @EL_13
   Scenario: EL_13 - Past Employees Only shows only past employees
     When I select "Past Employees Only" in the "Include" filter
@@ -167,24 +165,24 @@ Feature: Employee List
 
   # BA VR-02: gõ Supervisor Name mà không chọn gợi ý thì báo "Invalid", viền đỏ và không tìm kiếm.
   @supervisor-name @validation
-  Scenario Outline: <id> - Supervisor Name typed without choosing a suggestion is Invalid
+  Scenario Outline: <TC ID> - Supervisor Name typed without choosing a suggestion is Invalid (<Case>)
     Given I note the current results
-    When I type "<text>" in the "Supervisor Name" filter
+    When I type "<Text>" in the "Supervisor Name" filter without selecting a suggestion
     And I click Search
     Then the "Supervisor Name" filter shows the error "Invalid" with a red border
     And the results are unchanged
 
     @employee-list-data @EL_22
-    Examples: Name of an existing supervisor
-      | id    | text        |
-      | EL_22 | Shii Senpai |
+    Examples:
+      | TC ID | Case                  | Text        |
+      | EL_22 | name of a supervisor  | Shii Senpai |
 
     @EL_24
-    Examples: Wrong format
-      | id    | text          |
-      | EL_24 | 12345         |
-      | EL_24 | @#$%          |
-      | EL_24 | Shii   Senpai |
+    Examples:
+      | TC ID | Case                  | Text          |
+      | EL_24 | digits                | 12345         |
+      | EL_24 | special characters    | @#$%          |
+      | EL_24 | extra spaces          | Shii   Senpai |
 
   @supervisor-name @positive @EL_23
   Scenario: EL_23 - Search with an empty Supervisor Name returns the default list
