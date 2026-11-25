@@ -118,3 +118,82 @@ Feature: Employee List
     When I click Search
     Then no result is marked "(Past Employee)"
     And the Records Found count equals the number of "Current Employees Only" employees in PIM
+
+  # Các scenario @employee-list-data dùng nhân viên tạo qua API trong support/employeeListData.ts:
+  # 56422 Shii Senpai là Supervisor của 56423 Shii Kouhai, 56424 Shii Sayonara đã nghỉ việc.
+  @include @positive @employee-list-data @EL_13
+  Scenario: EL_13 - Past Employees Only shows only past employees
+    When I select "Past Employees Only" in the "Include" filter
+    And I click Search
+    Then every result is marked "(Past Employee)"
+    And the Records Found count equals the number of "Past Employees Only" employees in PIM
+
+  @include @positive @employee-list-data @EL_15
+  Scenario: EL_15 - Current and Past Employees shows both current and past employees
+    When I select "Current and Past Employees" in the "Include" filter
+    And I click Search
+    Then the Records Found count equals the number of "Current and Past Employees" employees in PIM
+    And the Records Found count is greater than the number of "Current Employees Only" employees in PIM
+
+  @include @positive @employee-list-data @EL_16
+  Scenario: EL_16 - Include is not applied until Search is clicked
+    Given I note the current results
+    When I select "Past Employees Only" in the "Include" filter
+    Then the results are unchanged
+    When I click Search
+    Then every result is marked "(Past Employee)"
+    And the Records Found count equals the number of "Past Employees Only" employees in PIM
+
+  @include @positive @EL_17
+  Scenario: EL_17 - Reset puts Include back to Current Employees Only
+    When I select "Past Employees Only" in the "Include" filter
+    And I click Reset
+    Then the "Include" filter is a dropdown showing "Current Employees Only"
+
+  #---------- Supervisor Name ----------
+  @supervisor-name @ui @EL_18
+  Scenario: EL_18 - Show the Supervisor Name autocomplete field and its placeholder
+    Then the Employee Information filter shows the fields:
+      | Supervisor Name |
+    And the "Supervisor Name" filter is an autocomplete field with placeholder "Type for hints..."
+
+  @supervisor-name @positive @employee-list-data @EL_19
+  Scenario: EL_19 - Choose a Supervisor Name from the suggestions
+    When I choose "Shii Senpai" from the "Supervisor Name" suggestions after typing "Senpai"
+    Then the "Supervisor Name" filter shows the name "Shii Senpai"
+    And the "Supervisor Name" filter shows no validation error
+
+  @supervisor-name @positive @employee-list-data @EL_20
+  Scenario: EL_20 - Search by a Supervisor Name chosen from the suggestions
+    When I choose "Shii Senpai" from the "Supervisor Name" suggestions after typing "Senpai"
+    And I click Search
+    Then every result has "Shii Senpai" in the "Supervisor" column
+    And the results include employee "56423"
+
+  # BA VR-02: gõ Supervisor Name mà không chọn gợi ý thì báo "Invalid", viền đỏ và không tìm kiếm.
+  @supervisor-name @validation
+  Scenario Outline: <id> - Supervisor Name typed without choosing a suggestion is Invalid
+    Given I note the current results
+    When I type "<text>" in the "Supervisor Name" filter
+    And I click Search
+    Then the "Supervisor Name" filter shows the error "Invalid" with a red border
+    And the results are unchanged
+
+    @employee-list-data @EL_22
+    Examples: Name of an existing supervisor
+      | id    | text        |
+      | EL_22 | Shii Senpai |
+
+    @EL_24
+    Examples: Wrong format
+      | id    | text          |
+      | EL_24 | 12345         |
+      | EL_24 | @#$%          |
+      | EL_24 | Shii   Senpai |
+
+  @supervisor-name @positive @EL_23
+  Scenario: EL_23 - Search with an empty Supervisor Name returns the default list
+    Then the "Supervisor Name" filter has the value ""
+    When I click Search
+    Then no result is marked "(Past Employee)"
+    And the Records Found count equals the number of "Current Employees Only" employees in PIM
