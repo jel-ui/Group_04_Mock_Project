@@ -19,15 +19,14 @@ Framework kiểm thử UI cho OrangeHRM dùng Cucumber (Gherkin) + Playwright + 
   - `personal-details.steps.ts`, `name-employee-id.steps.ts`, `other-details.steps.ts`, `personal-assets.steps.ts`, `employee-state.steps.ts`: Personal Details.
   - `employee-list.steps.ts`: Employee List.
   - Các step có ở cả hai màn (`the "..." field shows the "..." error`, `the "..." field has the value "..."`, `I change the Employee Id to "..."`) chỉ định nghĩa một lần: đã mở Personal Details thì kiểm tra trên Personal Details, chưa thì trên form Add Employee.
-- pages/: Page Objects (`LoginPage`, `DashboardPage`, `EmployeeListPage`, `AddEmployeePage`, `SystemUsersPage`, `PersonalDetailsPage`, `PersonalAssetsPage`).
+- pages/: Page Objects (`LoginPage`, `DashboardPage`, `EmployeeListPage`, `AddEmployeePage`, `SystemUsersPage`, `PersonalDetailsPage`, `PersonalAssetsPage`, `EmployeeJobPage`, `ReportToPage`).
 - support/
   - `config.ts`: đọc URL, browser, headless, tài khoản từ biến môi trường.
   - `world.ts`: CustomWorld, khởi tạo các Page Object, mở Personal Details theo Employee Id.
   - `hooks.ts`: mở/đóng browser, chụp ảnh cuối mỗi scenario, ghi Test Case ID (`AE_...`, `ED_...`) vào report.
   - `pageLoad.ts`: chờ trang load xong trước khi kiểm tra.
   - `testData.ts`: Employee Id ngẫu nhiên và nhân viên test của Personal Details, Employee List.
-  - `pimApi.ts`: gọi API OrangeHRM bằng phiên đăng nhập của trình duyệt để chuẩn bị dữ liệu và đối chiếu số bản ghi.
-  - `employeeListData.ts`: Before hook tạo nhân viên cho các scenario `@employee-list-data` và xoá khi chạy xong.
+  - `employeeListData.ts`: tạo nhân viên test bằng UI cho các scenario `@employee-list-data` và xoá khi chạy xong.
 - test-data/: `photos/` (Add Employee), `attachments/` và `profile-pictures/` (Personal Details).
 - test-results/: báo cáo HTML sau khi chạy.
 
@@ -152,12 +151,15 @@ Tag `@personalDetails` lọc toàn bộ testcase của màn này; có thể lọ
 Tag `@employeeList` lọc toàn bộ testcase của màn này; lọc theo chức năng bằng `@employee-name`, `@employee-id`, `@employment-status`, `@include`, `@supervisor-name`, hoặc theo ID như `@EL_04`.
 
 - Mỗi scenario bắt đầu bằng `Given I am logged in and on the Employee List page`.
-- Nhân viên test: `56420` Shii Hoshino (hiện tại) và `56421` Shii Yorukawa (đã nghỉ việc), khai báo trong `support/testData.ts`. Step `Given the current employee "..." exists` / `Given the past employee "..." exists` kiểm tra qua API và tạo lại nếu bị xoá, đổi tên hoặc sai trạng thái. Thao tác cần kiểm thử vẫn làm trên giao diện.
-- EL_09 gán Employment Status cho nhân viên `56420` trước khi lọc, để luôn có ít nhất một kết quả.
-- EL_06 xoá mọi nhân viên có Employee Id chứa `99999999` (ô Employee Id tìm theo kiểu "chứa chuỗi").
-- EL_07, EL_10, EL_12 đối chiếu `(N) Records Found` với số nhân viên lấy từ API. Demo dùng chung nên số có thể đổi giữa hai lần đọc; lệch thì tìm lại tối đa 3 lần.
+- Không gọi API: dữ liệu test và các số dùng để đối chiếu đều lấy bằng thao tác UI.
+- Scenario có tag `@employee-list-data` chạy Before hook trong `support/employeeListData.ts`. Lần đầu trong mỗi lần chạy, hook mở một trình duyệt riêng, xoá các nhân viên có Employee Id trùng rồi tạo lại bằng form Add Employee và các tab Job, Report-to:
+  - `56420` Shii Hoshino, Employment Status Full-Time Permanent (EL_02–EL_05, EL_09).
+  - `56421` Shii Yorukawa, đã nghỉ việc (EL_12, EL_13, EL_15, EL_16).
+  - `56422` Shii Senpai là Supervisor của `56423` Shii Kouhai (EL_19, EL_20, EL_22).
+- Scenario fail thì lần retry tạo lại dữ liệu từ đầu. AfterAll xoá các nhân viên này bằng nút xoá ở Employee List; xoá lỗi chỉ in cảnh báo, lần chạy sau vẫn xoá theo Employee Id trước khi tạo.
+- EL_06 xoá (bằng UI) mọi nhân viên mà ô Employee Id tìm ra với `99999999` trước khi tìm.
+- Step `the Records Found count equals the number of "..." employees in PIM` đếm lại ở tab mới với hai lựa chọn Include còn lại (Current and Past = Current + Past). Demo dùng chung nên số có thể đổi giữa các lần đếm; lệch thì tìm lại tối đa 3 lần.
 - EL_04: BA (US-02 AC3, VR-01) yêu cầu báo "Invalid" khi gõ tên mà không chọn gợi ý, nhưng OrangeHRM 5.9 tìm theo phần tên đã gõ; scenario theo Expected Output của test case.
 - EL_14 và EL_21 không có Automation Feasibility trong file test case nên không viết scenario.
-- Scenario có tag `@employee-list-data` chạy Before hook trong `support/employeeListData.ts`: lần đầu trong mỗi lần chạy, hook đăng nhập API riêng và tạo `56422` Shii Senpai, `56423` Shii Kouhai (Supervisor là Shii Senpai), `56424` Shii Sayonara (đã nghỉ việc); AfterAll xoá ba nhân viên này.
 - EL_16, EL_22, EL_24 ghi lại bảng kết quả trước khi thao tác, sau đó kiểm tra số bản ghi, cột Id không đổi và không có request tìm kiếm nào được gửi.
 - EL_22, EL_24 theo BA VR-02: gõ Supervisor Name mà không chọn gợi ý thì báo "Invalid", viền đỏ và không tìm kiếm. EL_24 thử số, ký tự đặc biệt và tên có nhiều khoảng trắng.
