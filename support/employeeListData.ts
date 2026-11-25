@@ -39,7 +39,7 @@ async function openSession() {
 async function deleteEmployeeListData(session: Awaited<ReturnType<typeof openSession>>) {
     await session.employeeList.openWithResults();
     for (const employeeId of Object.keys(employeeListEmployees)) {
-        await session.employeeList.deleteEmployeesFoundById(employeeId);
+        await session.employeeList.deleteEmployeesWithId(employeeId);
     }
 }
 

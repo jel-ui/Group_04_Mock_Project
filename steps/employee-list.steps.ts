@@ -56,7 +56,7 @@ Given('I am logged in and on the Employee List page', async function (this: Cust
 
 // Xoá mọi nhân viên mà ô Employee Id tìm ra với giá trị này để chắc chắn không có kết quả.
 Given('no employee has an Employee Id containing {string}', async function (this: CustomWorld, employeeId: string) {
-    await inNewTab(this, (employeeList) => employeeList.deleteEmployeesFoundById(employeeId));
+    await inNewTab(this, (employeeList) => employeeList.deleteEmployeesWithId(employeeId));
 });
 
 // ---------- Thao tác trên bộ lọc ----------

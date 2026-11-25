@@ -116,7 +116,11 @@ export class EmployeeListPage {
     // Nhấn Search rồi chờ bảng hiển thị đúng kết quả server trả về.
     // Nếu bộ lọc báo lỗi (ví dụ "Invalid") thì không có request tìm kiếm, chỉ chờ lỗi hiện ra.
     async clickSearch() {
-        const searched = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT }).catch(() => null);
+        // Chỉ nhận request gửi sau khi nhấn Search, không nhận nhầm kết quả của lần tải trước.
+        const searched = this.page
+            .waitForRequest(isResultListRequest, { timeout: PAGE_LOAD_TIMEOUT })
+            .then((request) => request.response())
+            .catch(() => null);
         const blocked = this.page
             .locator('.oxd-input-field-error-message')
             .first()
@@ -247,18 +251,11 @@ export class EmployeeListPage {
     }
 
     // Tìm theo Employee Id trong cả nhân viên hiện tại và đã nghỉ (Id của người đã nghỉ vẫn bị tính là trùng).
-    // Bảng không báo khi nào tìm xong, nên chờ đến khi không còn dòng nào khác Id cần tìm.
     async searchAllByEmployeeId(employeeId: string) {
-        await expect(this.recordsLabel()).toBeVisible({ timeout: 30000 });
+        await expect(this.recordsLabel()).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
         await this.selectInclude('Current and Past Employees');
         await this.employeeIdFilter().fill(employeeId);
-        await this.searchButton().click();
-        await expect(
-            this.page.locator('.oxd-table-card').filter({
-                hasNot: this.page.getByRole('cell', { name: employeeId, exact: true })
-            })
-        ).toHaveCount(0, { timeout: 30000 });
-        await expect(this.recordsLabel()).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
+        await this.clickSearch();
     }
 
     async countEmployeesWithId(employeeId: string) {
@@ -276,20 +273,6 @@ export class EmployeeListPage {
             await expect(this.deletedToast()).toBeVisible({ timeout: 30000 });
             remaining--;
             await expect(rows).toHaveCount(remaining, { timeout: 30000 });
-        }
-    }
-
-    // Xoá mọi nhân viên (hiện tại và đã nghỉ) mà ô Employee Id tìm ra với giá trị này.
-    async deleteEmployeesFoundById(employeeId: string) {
-        await this.selectFilterOption('Include', 'Current and Past Employees');
-        await this.employeeIdFilter().fill(employeeId);
-        await this.clickSearch();
-        let remaining = await this.resultRows().count();
-        while (remaining > 0) {
-            await this.deleteButtonInRow(this.resultRows().first()).click();
-            await this.confirmDeleteButton().click();
-            remaining--;
-            await expect(this.resultRows()).toHaveCount(remaining, { timeout: PAGE_LOAD_TIMEOUT });
         }
     }
 
