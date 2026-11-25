@@ -22,5 +22,9 @@ export const employeeListEmployees: Record<string, { firstName: string; lastName
     // Nhân viên hiện tại (EL_02-05, EL_09).
     '56420': { firstName: 'Shii', lastName: 'Hoshino' },
     // Nhân viên đã nghỉ việc (EL_12).
-    '56421': { firstName: 'Shii', lastName: 'Yorukawa' }
+    '56421': { firstName: 'Shii', lastName: 'Yorukawa' },
+    // Tạo qua API trước các scenario @employee-list-data, xoá khi chạy xong (support/employeeListData.ts).
+    '56422': { firstName: 'Shii', lastName: 'Senpai' },
+    '56423': { firstName: 'Shii', lastName: 'Kouhai' },
+    '56424': { firstName: 'Shii', lastName: 'Sayonara' }
 };

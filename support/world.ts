@@ -44,7 +44,7 @@ export class CustomWorld extends World {
         this.employeeListPage = new EmployeeListPage(page);
         this.systemUsersPage = new SystemUsersPage(page);
         this.personalDetailsPage = new PersonalDetailsPage(page);
-        this.pimApi = new PimApi(page);
+        this.pimApi = new PimApi(page.request);
     }
 
     // Tìm nhân viên theo Employee Id ở Employee List; chưa có (bị xoá trên demo) thì tạo lại.
