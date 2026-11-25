@@ -26,6 +26,8 @@ export class CustomWorld extends World {
     systemUsersPage!: SystemUsersPage;
     // Gọi API bằng phiên đăng nhập của trình duyệt để chuẩn bị dữ liệu (Employee List).
     pimApi!: PimApi;
+    // Bảng kết quả được ghi lại để kiểm tra không đổi (EL_16, EL_22, EL_24).
+    notedResults?: { records: string; ids: string[]; searchCount: () => number };
     employeeUnderTest?: EmployeeRecord;
     createdLoginDetails?: { username: string; password: string };
     // Employee Id gợi ý được ghi lại trước khi lưu (AE_P07).

@@ -242,3 +242,54 @@ Then('the Records Found count equals the number of {string} employees in PIM', a
     }
     expect(shown, `Records Found should equal the number of "${include}" employees`).toBe(expected);
 });
+
+// ---------- Include, Reset, Supervisor Name (EL_13-EL_24) ----------
+
+Given('I note the current results', async function (this: CustomWorld) {
+    const page = this.employeeListPage;
+    this.notedResults = {
+        records: (await page.recordsLabel().innerText()).trim(),
+        ids: await page.columnValues('Id'),
+        searchCount: page.watchResultRequests()
+    };
+});
+
+When('I click Reset', async function (this: CustomWorld) {
+    await this.employeeListPage.clickReset();
+});
+
+Then('the results are unchanged', async function (this: CustomWorld) {
+    const noted = this.notedResults;
+    if (!noted) throw new Error('The results were not noted before.');
+    expect(noted.searchCount(), 'No search should have been sent').toBe(0);
+    await expect(this.employeeListPage.recordsLabel()).toHaveText(noted.records);
+    expect(await this.employeeListPage.columnValues('Id')).toEqual(noted.ids);
+});
+
+Then('every result is marked {string}', async function (this: CustomWorld, marker: string) {
+    await expect(this.employeeListPage.resultRows().first(), 'The result list should not be empty').toBeVisible();
+    await expect(this.employeeListPage.resultRows().filter({ hasNotText: marker })).toHaveCount(0);
+});
+
+Then('the Records Found count is greater than the number of {string} employees in PIM', async function (
+    this: CustomWorld,
+    include: string
+) {
+    const includeEmployees = includeOptions[include];
+    if (!includeEmployees) throw new Error(`Unknown Include option "${include}".`);
+    const shown = await this.employeeListPage.recordsFoundCount();
+    expect(shown).toBeGreaterThan(await this.pimApi.countEmployees(includeEmployees));
+});
+
+Then('the {string} filter shows the name {string}', async function (this: CustomWorld, label: string, name: string) {
+    await this.employeeListPage.expectAutocompleteValue(label, name);
+});
+
+Then('the {string} filter shows the error {string} with a red border', async function (
+    this: CustomWorld,
+    label: string,
+    message: string
+) {
+    await expect(this.employeeListPage.validationError(label)).toHaveText(message);
+    await expect(this.employeeListPage.autocompleteErrorBorder(label)).toBeVisible();
+});

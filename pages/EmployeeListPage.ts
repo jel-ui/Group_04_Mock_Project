@@ -1,9 +1,13 @@
-import { expect, type Locator, type Page, type Response } from '@playwright/test';
+import { expect, type Locator, type Page, type Request, type Response } from '@playwright/test';
 import { PAGE_LOAD_TIMEOUT, waitForPageLoad } from '../support/pageLoad';
 
 // Request lấy danh sách của bảng kết quả (có model=detailed); ô gợi ý tên gọi cùng API nhưng không có tham số này.
-function isResultListRequest(response: Response) {
-    return response.request().method() === 'GET' && /\/api\/v2\/pim\/employees\?.*model=detailed/.test(response.url());
+function isResultListRequest(request: Request) {
+    return request.method() === 'GET' && /\/api\/v2\/pim\/employees\?.*model=detailed/.test(request.url());
+}
+
+function isResultListResponse(response: Response) {
+    return isResultListRequest(response.request());
 }
 
 function recordsFoundText(total: number) {
@@ -44,6 +48,15 @@ export class EmployeeListPage {
         return this.fieldBox(label).locator('.oxd-input-field-error-message');
     }
 
+    // Viền đỏ của ô gợi ý khi báo lỗi.
+    autocompleteErrorBorder(label: string) {
+        return this.fieldBox(label).locator('.oxd-autocomplete-text-input--error');
+    }
+
+    resetButton() {
+        return this.page.getByRole('button', { name: 'Reset', exact: true });
+    }
+
     autocompleteOptions() {
         return this.page.locator('.oxd-autocomplete-dropdown .oxd-autocomplete-option');
     }
@@ -80,8 +93,12 @@ export class EmployeeListPage {
         await this.typeInAutocomplete(label, typedText);
         await this.autocompleteSuggestions(suggestion);
         await this.autocompleteOptions().filter({ hasText: suggestion }).first().click();
-        // Nhân viên không có Middle Name thì ô hiển thị "First  Last" (2 dấu cách), nên so khớp bỏ qua số dấu cách.
-        const words = suggestion.trim().split(/\s+/).map(escapeRegExp);
+        await this.expectAutocompleteValue(label, suggestion);
+    }
+
+    // Nhân viên không có Middle Name thì ô hiển thị "First  Last" (2 dấu cách), nên so khớp bỏ qua số dấu cách.
+    async expectAutocompleteValue(label: string, name: string) {
+        const words = name.trim().split(/\s+/).map(escapeRegExp);
         await expect(this.filterInput(label)).toHaveValue(new RegExp(`^\\s*${words.join('\\s+')}\\s*$`));
     }
 
@@ -99,7 +116,7 @@ export class EmployeeListPage {
     // Nhấn Search rồi chờ bảng hiển thị đúng kết quả server trả về.
     // Nếu bộ lọc báo lỗi (ví dụ "Invalid") thì không có request tìm kiếm, chỉ chờ lỗi hiện ra.
     async clickSearch() {
-        const searched = this.page.waitForResponse(isResultListRequest, { timeout: PAGE_LOAD_TIMEOUT }).catch(() => null);
+        const searched = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT }).catch(() => null);
         const blocked = this.page
             .locator('.oxd-input-field-error-message')
             .first()
@@ -114,9 +131,24 @@ export class EmployeeListPage {
         await this.waitForResults(outcome);
     }
 
+    async clickReset() {
+        const loaded = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT });
+        await this.resetButton().click();
+        await this.waitForResults(await loaded);
+    }
+
+    // Đếm số lần bảng kết quả gọi tìm kiếm kể từ lúc bắt đầu theo dõi.
+    watchResultRequests() {
+        let count = 0;
+        this.page.on('request', (request) => {
+            if (isResultListRequest(request)) count++;
+        });
+        return () => count;
+    }
+
     // Tải lại trang (bộ lọc về mặc định) và chờ bảng kết quả của lần tải mới.
     async reload() {
-        const loaded = this.page.waitForResponse(isResultListRequest, { timeout: PAGE_LOAD_TIMEOUT });
+        const loaded = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT });
         await this.page.reload();
         await this.expectVisible();
         await this.waitForResults(await loaded);
