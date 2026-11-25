@@ -6,6 +6,7 @@ import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PersonalDetailsPage } from '../pages/PersonalDetailsPage';
 import { SystemUsersPage } from '../pages/SystemUsersPage';
+import { PimApi } from './pimApi';
 import { testEmployees } from './testData';
 
 export interface EmployeeRecord {
@@ -23,6 +24,8 @@ export class CustomWorld extends World {
     addEmployeePage!: AddEmployeePage;
     employeeListPage!: EmployeeListPage;
     systemUsersPage!: SystemUsersPage;
+    // Gọi API bằng phiên đăng nhập của trình duyệt để chuẩn bị dữ liệu (Employee List).
+    pimApi!: PimApi;
     employeeUnderTest?: EmployeeRecord;
     createdLoginDetails?: { username: string; password: string };
     // Employee Id gợi ý được ghi lại trước khi lưu (AE_P07).
@@ -41,6 +44,7 @@ export class CustomWorld extends World {
         this.employeeListPage = new EmployeeListPage(page);
         this.systemUsersPage = new SystemUsersPage(page);
         this.personalDetailsPage = new PersonalDetailsPage(page);
+        this.pimApi = new PimApi(page);
     }
 
     // Tìm nhân viên theo Employee Id ở Employee List; chưa có (bị xoá trên demo) thì tạo lại.

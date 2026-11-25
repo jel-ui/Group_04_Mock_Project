@@ -27,8 +27,8 @@ Before(async function (this: CustomWorld) {
 
 // Ghi ID từ tag của Scenario hoặc từ tên đã nội suy của từng dòng Scenario Outline.
 Before(function (this: CustomWorld, { pickle }) {
-    const taggedIds = pickle.tags.map((tag) => tag.name.slice(1)).filter((name) => /^(AE_|ED_\d+$)/.test(name));
-    const namedId = pickle.name.match(/\b(?:AE_[A-Z]\d+|ED_\d+)\b/)?.[0];
+    const taggedIds = pickle.tags.map((tag) => tag.name.slice(1)).filter((name) => /^(AE_|ED_\d+$|EL_\d+$)/.test(name));
+    const namedId = pickle.name.match(/\b(?:AE_[A-Z]\d+|ED_\d+|EL_\d+)\b/)?.[0];
     const testCaseIds = [...new Set([...taggedIds, ...(namedId ? [namedId] : [])])];
     if (testCaseIds.length > 0) this.attach('Test Case: ' + testCaseIds.join(', '), 'text/plain');
 });

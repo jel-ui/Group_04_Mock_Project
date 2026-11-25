@@ -2,7 +2,7 @@
   "name": "orangehrm-automation",
   "version": "1.0.0",
   "private": true,
-  "description": "Cucumber and Playwright automation framework for OrangeHRM (Login, PIM > Add Employee, PIM > Employee > Personal Details).",
+  "description": "Cucumber and Playwright automation framework for OrangeHRM (Login, PIM > Add Employee, PIM > Employee > Personal Details, PIM > Employee List).",
   "scripts": {
     "test": "cucumber-js",
     "test:smoke": "cucumber-js --tags @smoke",
@@ -18,7 +18,8 @@
     "test:ui": "cucumber-js --tags \"@ui\"",
     "test:positive": "cucumber-js --tags \"@addEmployee and @positive\"",
     "test:boundary": "cucumber-js --tags \"@addEmployee and @boundary\"",
-    "test:personal-details": "cucumber-js --tags \"@personalDetails\""
+    "test:personal-details": "cucumber-js --tags \"@personalDetails\"",
+    "test:employee-list": "cucumber-js --tags \"@employeeList\""
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

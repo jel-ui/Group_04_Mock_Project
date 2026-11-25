@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        screen: [login, add-employee, personal-details]
+        screen: [login, add-employee, personal-details, employee-list]
     env:
       FEATURES: features/${{ matrix.screen }}/**/*.feature
       TRACE_ON_FAILURE: 'true'

@@ -4,6 +4,7 @@ Framework kiểm thử UI cho OrangeHRM dùng Cucumber (Gherkin) + Playwright + 
 
 - Sprint 1: đăng nhập và màn **PIM > Add Employee**.
 - Sprint 2: màn **PIM > Employee > Personal Details**.
+- Sprint 3: màn **PIM > Employee List**.
 
 ## Cấu trúc
 
@@ -11,10 +12,12 @@ Framework kiểm thử UI cho OrangeHRM dùng Cucumber (Gherkin) + Playwright + 
   - `login/`: đăng nhập.
   - `add-employee/`: `add-employee-form`, `employee-id`, `login-details`, `profile-photo`, `employee-navigation`.
   - `personal-details/`: `personal-details` (nhóm bằng `Rule`), `profile-picture`.
+  - `employee-list/`: `employee-list`.
 - steps/: step definitions (`*.steps.ts`).
   - `login.steps.ts`: các bước đăng nhập.
   - `employee.steps.ts`, `add-employee.steps.ts`, `login-details.steps.ts`, `profile-photo.steps.ts`, `employee-navigation.steps.ts`, `system-users.steps.ts`: Add Employee.
   - `personal-details.steps.ts`, `name-employee-id.steps.ts`, `other-details.steps.ts`, `personal-assets.steps.ts`, `employee-state.steps.ts`: Personal Details.
+  - `employee-list.steps.ts`: Employee List.
   - Các step có ở cả hai màn (`the "..." field shows the "..." error`, `the "..." field has the value "..."`, `I change the Employee Id to "..."`) chỉ định nghĩa một lần: đã mở Personal Details thì kiểm tra trên Personal Details, chưa thì trên form Add Employee.
 - pages/: Page Objects (`LoginPage`, `DashboardPage`, `EmployeeListPage`, `AddEmployeePage`, `SystemUsersPage`, `PersonalDetailsPage`, `PersonalAssetsPage`).
 - support/
@@ -22,7 +25,8 @@ Framework kiểm thử UI cho OrangeHRM dùng Cucumber (Gherkin) + Playwright + 
   - `world.ts`: CustomWorld, khởi tạo các Page Object, mở Personal Details theo Employee Id.
   - `hooks.ts`: mở/đóng browser, chụp ảnh cuối mỗi scenario, ghi Test Case ID (`AE_...`, `ED_...`) vào report.
   - `pageLoad.ts`: chờ trang load xong trước khi kiểm tra.
-  - `testData.ts`: Employee Id ngẫu nhiên và nhân viên test của Personal Details.
+  - `testData.ts`: Employee Id ngẫu nhiên và nhân viên test của Personal Details, Employee List.
+  - `pimApi.ts`: gọi API OrangeHRM bằng phiên đăng nhập của trình duyệt để chuẩn bị dữ liệu và đối chiếu số bản ghi.
 - test-data/: `photos/` (Add Employee), `attachments/` và `profile-pictures/` (Personal Details).
 - test-results/: báo cáo HTML sau khi chạy.
 
@@ -61,6 +65,7 @@ Tạo file `.env` từ mẫu rồi điền tài khoản:
     npm run test:login              # đăng nhập
     npm run test:add-employee       # màn Add Employee
     npm run test:personal-details   # màn Personal Details
+    npm run test:employee-list      # màn Employee List
     npm run test:dry                # kiểm tra step đã được định nghĩa đủ, không mở browser
     npm run typecheck               # kiểm tra lỗi TypeScript
 
@@ -81,9 +86,9 @@ Xem trace của scenario fail:
 
     npx playwright show-trace test-results\traces\<tên scenario>.zip
 
-Trên GitHub Actions, 3 màn hình login, add-employee, personal-details chạy song song ở 3 job. Mỗi job có artifact `cucumber-report-<màn hình>` gồm báo cáo HTML và trace.
+Trên GitHub Actions, 4 màn hình login, add-employee, personal-details, employee-list chạy song song ở 4 job. Mỗi job có artifact `cucumber-report-<màn hình>` gồm báo cáo HTML và trace.
 
-Before hook ghi Test Case ID vào report HTML: Scenario thường lấy ID từ tag (`@AE_...`, `@ED_...`), còn Scenario Outline lấy ID từ tên scenario đã nội suy.
+Before hook ghi Test Case ID vào report HTML: Scenario thường lấy ID từ tag (`@AE_...`, `@ED_...`, `@EL_...`), còn Scenario Outline lấy ID từ tên scenario đã nội suy.
 
 ## Sprint 1: Add Employee
 
@@ -135,3 +140,18 @@ Tag `@personalDetails` lọc toàn bộ testcase của màn này; có thể lọ
 - ED_02 tạo nhân viên mới với Employee Id tự sinh.
 - ED_58 và ED_66 cần dữ liệu của nhân viên phụ để kiểm tra giá trị định danh trùng.
 - Data ngày trong feature theo định dạng testcase `yyyy-dd-mm`; `PersonalDetailsPage` đổi sang định dạng đang cấu hình trên OrangeHRM khi nhập và kiểm tra.
+
+## Sprint 3: Employee List
+
+| Feature | Phạm vi |
+| --- | --- |
+| `employee-list/employee-list.feature` | Employee Name, Employee Id, Employment Status, Include mặc định: EL_01–EL_12 |
+
+Tag `@employeeList` lọc toàn bộ testcase của màn này; lọc theo chức năng bằng `@employee-name`, `@employee-id`, `@employment-status`, `@include`, hoặc theo ID như `@EL_04`.
+
+- Mỗi scenario bắt đầu bằng `Given I am logged in and on the Employee List page`.
+- Nhân viên test: `56420` Shii Hoshino (hiện tại) và `56421` Shii Yorukawa (đã nghỉ việc), khai báo trong `support/testData.ts`. Step `Given the current employee "..." exists` / `Given the past employee "..." exists` kiểm tra qua API và tạo lại nếu bị xoá, đổi tên hoặc sai trạng thái. Thao tác cần kiểm thử vẫn làm trên giao diện.
+- EL_09 gán Employment Status cho nhân viên `56420` trước khi lọc, để luôn có ít nhất một kết quả.
+- EL_06 xoá mọi nhân viên có Employee Id chứa `99999999` (ô Employee Id tìm theo kiểu "chứa chuỗi").
+- EL_07, EL_10, EL_12 đối chiếu `(N) Records Found` với số nhân viên lấy từ API. Demo dùng chung nên số có thể đổi giữa hai lần đọc; lệch thì tìm lại tối đa 3 lần.
+- EL_04: BA (US-02 AC3, VR-01) yêu cầu báo "Invalid" khi gõ tên mà không chọn gợi ý, nhưng OrangeHRM 5.9 tìm theo phần tên đã gõ; scenario theo Expected Output của test case.
