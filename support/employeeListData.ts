@@ -1,48 +1,89 @@
-import { AfterAll, Before } from '@cucumber/cucumber';
+import { After, AfterAll, Before, Status } from '@cucumber/cucumber';
+import type { Browser } from '@playwright/test';
+import { AddEmployeePage } from '../pages/AddEmployeePage';
+import { DashboardPage } from '../pages/DashboardPage';
+import { EmployeeJobPage } from '../pages/EmployeeJobPage';
+import { EmployeeListPage } from '../pages/EmployeeListPage';
+import { LoginPage } from '../pages/LoginPage';
+import { PersonalDetailsPage } from '../pages/PersonalDetailsPage';
+import { ReportToPage } from '../pages/ReportToPage';
 import { config } from './config';
-import { loginPimApi, type ApiEmployee, type PimApi } from './pimApi';
+import { launchBrowser } from './hooks';
 import { employeeListEmployees } from './testData';
 
-// 56423 Shii Kouhai có Supervisor là 56422 Shii Senpai; 56424 Shii Sayonara đã nghỉ việc.
-const SUPERVISOR_ID = '56422';
-const SUBORDINATE_ID = '56423';
-const PAST_ID = '56424';
-
-let api: PimApi | undefined;
-let created: ApiEmployee[] = [];
+// Dữ liệu tạo và xoá ở một trình duyệt riêng để không ảnh hưởng phiên đăng nhập của scenario.
+let browser: Browser | undefined;
 let setup: Promise<void> | undefined;
 
-async function createEmployee(employeeId: string) {
-    const { firstName, lastName } = employeeListEmployees[employeeId];
-    await api!.deleteEmployees(await api!.findEmployeesWithId(employeeId));
-    const employee = await api!.createEmployee(firstName, lastName, employeeId);
-    created.push(employee);
-    return employee;
+async function openSession() {
+    browser ??= await launchBrowser();
+    const context = await browser.newContext({ baseURL: config.baseUrl, viewport: { width: 1366, height: 768 } });
+    const page = await context.newPage();
+    page.setDefaultTimeout(config.actionTimeout);
+    page.setDefaultNavigationTimeout(config.navigationTimeout);
+
+    const loginPage = new LoginPage(page);
+    await loginPage.open();
+    await loginPage.login(config.username, config.password);
+    await new DashboardPage(page).expectVisible();
+    return {
+        context,
+        employeeList: new EmployeeListPage(page),
+        addEmployee: new AddEmployeePage(page),
+        personalDetails: new PersonalDetailsPage(page),
+        job: new EmployeeJobPage(page),
+        reportTo: new ReportToPage(page)
+    };
+}
+
+async function deleteEmployeeListData(session: Awaited<ReturnType<typeof openSession>>) {
+    await session.employeeList.openWithResults();
+    for (const employeeId of Object.keys(employeeListEmployees)) {
+        await session.employeeList.deleteEmployeesFoundById(employeeId);
+    }
 }
 
 async function createEmployeeListData() {
-    api ??= await loginPimApi(config.baseUrl, config.username, config.password);
-    created = [];
-    const supervisor = await createEmployee(SUPERVISOR_ID);
-    const subordinate = await createEmployee(SUBORDINATE_ID);
-    await api.assignSupervisor(subordinate, supervisor);
-    await api.terminateEmployee(await createEmployee(PAST_ID));
+    const session = await openSession();
+    try {
+        await deleteEmployeeListData(session);
+        for (const [employeeId, employee] of Object.entries(employeeListEmployees)) {
+            await session.addEmployee.open();
+            await session.addEmployee.addEmployee(employee.firstName, employee.lastName, employeeId);
+            // Demo đôi khi mở Personal Details mà không hiện nội dung, tải lại một lần.
+            await session.personalDetails.expectVisible(employeeId).catch(() => session.personalDetails.reload(employeeId));
+            if (employee.employmentStatus || employee.past) await session.job.open();
+            if (employee.employmentStatus) await session.job.setEmploymentStatus(employee.employmentStatus);
+            if (employee.past) await session.job.terminateEmployment();
+            if (employee.supervisor) {
+                await session.reportTo.open();
+                await session.reportTo.addSupervisor(employee.supervisor);
+            }
+        }
+    } finally {
+        await session.context.close();
+    }
 }
 
-// Tạo dữ liệu một lần cho cả lần chạy; lỗi thì scenario sau (hoặc lần retry) tạo lại.
-Before({ tags: '@employee-list-data' }, async function () {
-    setup ??= createEmployeeListData().catch((error) => {
-        setup = undefined;
-        throw error;
-    });
+// Tạo một lần cho cả lần chạy; scenario fail thì lần retry tạo lại từ đầu.
+Before({ tags: '@employee-list-data', timeout: 600_000 }, async function () {
+    setup ??= createEmployeeListData();
     await setup;
 });
 
-AfterAll(async function () {
-    if (!api) return;
+After({ tags: '@employee-list-data' }, function ({ result }) {
+    if (result?.status === Status.FAILED) setup = undefined;
+});
+
+// Lỗi khi dọn chỉ cảnh báo, lần chạy sau vẫn xoá theo Employee Id trước khi tạo.
+AfterAll({ timeout: 300_000 }, async function () {
+    if (!browser) return;
     try {
-        await api.deleteEmployees(created);
+        await deleteEmployeeListData(await openSession());
+    } catch (error) {
+        console.warn('Could not delete Employee List test data:', (error as Error).message.split('\n')[0]);
     } finally {
-        await api.dispose();
+        await browser.close();
+        browser = undefined;
     }
 });

@@ -146,6 +146,17 @@ export class EmployeeListPage {
         return () => count;
     }
 
+    // Chờ bảng kết quả lần đầu sau khi vào trang, để lần Search sau không nhận nhầm kết quả này.
+    async loadResults(openPage: () => Promise<void>) {
+        const loaded = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT });
+        await openPage();
+        await this.waitForResults(await loaded);
+    }
+
+    async openWithResults() {
+        await this.loadResults(() => this.open());
+    }
+
     // Tải lại trang (bộ lọc về mặc định) và chờ bảng kết quả của lần tải mới.
     async reload() {
         const loaded = this.page.waitForResponse(isResultListResponse, { timeout: PAGE_LOAD_TIMEOUT });
@@ -265,6 +276,20 @@ export class EmployeeListPage {
             await expect(this.deletedToast()).toBeVisible({ timeout: 30000 });
             remaining--;
             await expect(rows).toHaveCount(remaining, { timeout: 30000 });
+        }
+    }
+
+    // Xoá mọi nhân viên (hiện tại và đã nghỉ) mà ô Employee Id tìm ra với giá trị này.
+    async deleteEmployeesFoundById(employeeId: string) {
+        await this.selectFilterOption('Include', 'Current and Past Employees');
+        await this.employeeIdFilter().fill(employeeId);
+        await this.clickSearch();
+        let remaining = await this.resultRows().count();
+        while (remaining > 0) {
+            await this.deleteButtonInRow(this.resultRows().first()).click();
+            await this.confirmDeleteButton().click();
+            remaining--;
+            await expect(this.resultRows()).toHaveCount(remaining, { timeout: PAGE_LOAD_TIMEOUT });
         }
     }
 

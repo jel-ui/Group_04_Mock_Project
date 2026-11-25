@@ -2,8 +2,9 @@
 Feature: Employee List
 
   # Sprint 3 - PIM > Employee List (BA-S3-EMPLIST-001).
-  # Nhân viên test 56420 (hiện tại) và 56421 (đã nghỉ việc) khai báo trong support/testData.ts;
-  # bị xoá hoặc sửa trên demo thì step chuẩn bị dữ liệu tạo lại qua API.
+  # Scenario @employee-list-data dùng nhân viên test tạo bằng UI trước khi chạy và xoá khi chạy xong
+  # (support/employeeListData.ts): 56420 Shii Hoshino (Full-Time Permanent), 56421 Shii Yorukawa (đã nghỉ việc),
+  # 56422 Shii Senpai là Supervisor của 56423 Shii Kouhai.
 
   Background:
     Given I am logged in and on the Employee List page
@@ -17,16 +18,14 @@ Feature: Employee List
       | Employment Status |
     And the "Employee Name" filter is an autocomplete field with placeholder "Type for hints..."
 
-  @employee-name @positive @EL_02
+  @employee-name @positive @employee-list-data @EL_02
   Scenario: EL_02 - Suggest employees whose name contains the typed text
-    Given the current employee "56420" exists
     When I type "Hoshin" in the "Employee Name" filter
     Then the "Employee Name" suggestions include "Shii Hoshino"
     And every "Employee Name" suggestion contains "Hoshin"
 
-  @employee-name @positive @EL_03
+  @employee-name @positive @employee-list-data @EL_03
   Scenario: EL_03 - Search by an Employee Name chosen from the suggestions
-    Given the current employee "56420" exists
     When I choose "Shii Hoshino" from the "Employee Name" suggestions after typing "Hoshino"
     And I click Search
     Then the Records Found label shows "(1) Record Found"
@@ -35,9 +34,8 @@ Feature: Employee List
 
   # BA US-02 AC3 (VR-01) yêu cầu hiện "Invalid" khi không chọn gợi ý, nhưng OrangeHRM 5.9
   # tìm theo phần tên đã gõ (tham số nameOrId). Kịch bản theo Expected Output của test case EL_04.
-  @employee-name @validation @EL_04
+  @employee-name @validation @employee-list-data @EL_04
   Scenario: EL_04 - Search by a typed Employee Name without choosing a suggestion
-    Given the current employee "56420" exists
     When I type "Hoshino" in the "Employee Name" filter without selecting a suggestion
     And I click Search
     Then the "Employee Name" filter shows no validation error
@@ -45,9 +43,8 @@ Feature: Employee List
     And every result has a name containing "Hoshino"
 
   #---------- Employee Id ----------
-  @employee-id @positive @EL_05
+  @employee-id @positive @employee-list-data @EL_05
   Scenario: EL_05 - Search by an existing Employee Id
-    Given the current employee "56420" exists
     When I enter "56420" in the "Employee Id" filter
     And I click Search
     Then the results include employee "56420"
@@ -87,9 +84,8 @@ Feature: Employee List
       | Part-Time Contract   |
       | Part-Time Internship |
 
-  @employment-status @positive @EL_09
+  @employment-status @positive @employee-list-data @EL_09
   Scenario: EL_09 - Filter the list by Employment Status
-    Given the current employee "56420" has Employment Status "Full-Time Permanent"
     When I select "Full-Time Permanent" in the "Employment Status" filter
     And I click Search
     Then every result has "Full-Time Permanent" in the "Employment Status" column
@@ -111,16 +107,15 @@ Feature: Employee List
       | Past Employees Only        |
     And the selected dropdown option is "Current Employees Only"
 
-  @include @positive @EL_12
+  @include @positive @employee-list-data @EL_12
   Scenario: EL_12 - Search without conditions returns only current employees
-    Given the past employee "56421" exists
     Then the "Include" filter is a dropdown showing "Current Employees Only"
     When I click Search
     Then no result is marked "(Past Employee)"
     And the Records Found count equals the number of "Current Employees Only" employees in PIM
 
-  # Các scenario @employee-list-data dùng nhân viên tạo qua API trong support/employeeListData.ts:
-  # 56422 Shii Senpai là Supervisor của 56423 Shii Kouhai, 56424 Shii Sayonara đã nghỉ việc.
+  # Các scenario @employee-list-data dùng nhân viên tạo bằng UI trong support/employeeListData.ts:
+  # 56422 Shii Senpai là Supervisor của 56423 Shii Kouhai, 56421 Shii Yorukawa đã nghỉ việc.
   @include @positive @employee-list-data @EL_13
   Scenario: EL_13 - Past Employees Only shows only past employees
     When I select "Past Employees Only" in the "Include" filter

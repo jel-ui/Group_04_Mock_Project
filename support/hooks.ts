@@ -8,8 +8,12 @@ const browserTypes = { chromium, firefox, webkit };
 let browser: Browser | undefined;
 setDefaultTimeout(config.stepTimeout);
 
+export function launchBrowser() {
+    return browserTypes[config.browser].launch({ headless: config.headless });
+}
+
 BeforeAll(async function () {
-    browser = await browserTypes[config.browser].launch({ headless: config.headless });
+    browser = await launchBrowser();
 });
 
 Before(async function (this: CustomWorld) {

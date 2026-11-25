@@ -1,11 +1,13 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
+import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { config } from '../support/config';
-import { includeOptions, type ApiEmployee } from '../support/pimApi';
 import { employeeListEmployees } from '../support/testData';
 import { CustomWorld } from '../support/world';
 
 // ---------- Chuẩn bị dữ liệu ----------
+
+const [CURRENT_ONLY, CURRENT_AND_PAST, PAST_ONLY] = ['Current Employees Only', 'Current and Past Employees', 'Past Employees Only'];
 
 function employeeListEmployee(employeeId: string) {
     const employee = employeeListEmployees[employeeId];
@@ -13,61 +15,48 @@ function employeeListEmployee(employeeId: string) {
     return employee;
 }
 
-// Đảm bảo có đúng một nhân viên với Employee Id này, đúng họ tên và đúng trạng thái (hiện tại / đã nghỉ).
-// Demo dùng chung nên nhân viên test có thể bị người khác xoá hoặc sửa; khi đó xoá bản ghi lệch và tạo lại.
-async function ensureEmployee(world: CustomWorld, employeeId: string, state: 'current' | 'past'): Promise<ApiEmployee> {
-    const { firstName, lastName } = employeeListEmployee(employeeId);
-    const matches = await world.pimApi.findEmployeesWithId(employeeId);
-    const existing = matches[0];
-    const isPast = existing?.terminationId !== null && existing?.terminationId !== undefined;
-    if (
-        matches.length === 1 &&
-        existing.firstName === firstName &&
-        existing.middleName === '' &&
-        existing.lastName === lastName &&
-        isPast === (state === 'past')
-    ) {
-        return existing;
+// Làm việc trên Employee List ở tab mới để không đổi bộ lọc của tab đang kiểm tra.
+async function inNewTab<T>(world: CustomWorld, action: (employeeList: EmployeeListPage) => Promise<T>) {
+    const page = await world.context.newPage();
+    page.setDefaultTimeout(config.actionTimeout);
+    try {
+        const employeeList = new EmployeeListPage(page);
+        await employeeList.openWithResults();
+        return await action(employeeList);
+    } finally {
+        await page.close();
     }
+}
 
-    await world.pimApi.deleteEmployees(matches);
-    const created = await world.pimApi.createEmployee(firstName, lastName, employeeId);
-    if (state === 'past') await world.pimApi.terminateEmployee(created);
-    return created;
+function countFor(world: CustomWorld, include: string) {
+    return inNewTab(world, async (employeeList) => {
+        await employeeList.selectFilterOption('Include', include);
+        await employeeList.clickSearch();
+        return employeeList.recordsFoundCount();
+    });
+}
+
+// Tính từ hai lựa chọn Include còn lại: Current and Past = Current + Past.
+async function expectedCountFor(world: CustomWorld, include: string) {
+    if (include === CURRENT_AND_PAST) return (await countFor(world, CURRENT_ONLY)) + (await countFor(world, PAST_ONLY));
+    if (include === CURRENT_ONLY) return (await countFor(world, CURRENT_AND_PAST)) - (await countFor(world, PAST_ONLY));
+    if (include === PAST_ONLY) return (await countFor(world, CURRENT_AND_PAST)) - (await countFor(world, CURRENT_ONLY));
+    throw new Error(`Unknown Include option "${include}".`);
 }
 
 Given('I am logged in and on the Employee List page', async function (this: CustomWorld) {
     await this.loginPage.open();
     await this.loginPage.login(config.username, config.password);
     await this.dashboardPage.expectVisible();
-    await this.dashboardPage.openPIM();
-    await this.employeeListPage.expectVisible();
-    await expect(this.employeeListPage.recordsLabel()).toBeVisible({ timeout: 60000 });
+    await this.employeeListPage.loadResults(async () => {
+        await this.dashboardPage.openPIM();
+        await this.employeeListPage.expectVisible();
+    });
 });
 
-Given('the current employee {string} exists', async function (this: CustomWorld, employeeId: string) {
-    await ensureEmployee(this, employeeId, 'current');
-});
-
-Given('the current employee {string} has Employment Status {string}', async function (
-    this: CustomWorld,
-    employeeId: string,
-    status: string
-) {
-    const employee = await ensureEmployee(this, employeeId, 'current');
-    await this.pimApi.setEmploymentStatus(employee, status);
-});
-
-Given('the past employee {string} exists', async function (this: CustomWorld, employeeId: string) {
-    await ensureEmployee(this, employeeId, 'past');
-    const current = await this.pimApi.countEmployees('onlyCurrent');
-    const all = await this.pimApi.countEmployees('currentAndPast');
-    expect(all, 'There should be at least one past employee in PIM').toBeGreaterThan(current);
-});
-
-// Ô Employee Id tìm theo kiểu "chứa chuỗi", nên dọn mọi Id chứa giá trị này để chắc chắn không có kết quả.
+// Xoá mọi nhân viên mà ô Employee Id tìm ra với giá trị này để chắc chắn không có kết quả.
 Given('no employee has an Employee Id containing {string}', async function (this: CustomWorld, employeeId: string) {
-    await this.pimApi.deleteEmployees(await this.pimApi.findEmployeesWithIdContaining(employeeId));
+    await inNewTab(this, (employeeList) => employeeList.deleteEmployeesFoundById(employeeId));
 });
 
 // ---------- Thao tác trên bộ lọc ----------
@@ -222,21 +211,17 @@ Then('no result is marked {string}', async function (this: CustomWorld, marker: 
     await expect(this.employeeListPage.resultRows().filter({ hasText: marker })).toHaveCount(0);
 });
 
-// Đối chiếu "(N) Records Found" với số nhân viên lấy trực tiếp từ API.
-// Demo dùng chung: người khác có thể thêm/xoá nhân viên giữa lúc bảng tải và lúc gọi API,
+// Demo dùng chung: người khác có thể thêm/xoá nhân viên giữa các lần đếm,
 // nên nếu lệch thì tìm lại với cùng bộ lọc (tối đa 3 lần) trước khi kết luận fail.
 Then('the Records Found count equals the number of {string} employees in PIM', async function (
     this: CustomWorld,
     include: string
 ) {
-    const includeEmployees = includeOptions[include];
-    if (!includeEmployees) throw new Error(`Unknown Include option "${include}".`);
-
     let shown = 0;
     let expected = 0;
     for (let attempt = 1; attempt <= 3; attempt++) {
         shown = await this.employeeListPage.recordsFoundCount();
-        expected = await this.pimApi.countEmployees(includeEmployees);
+        expected = await expectedCountFor(this, include);
         if (shown === expected) break;
         if (attempt < 3) await this.employeeListPage.clickSearch();
     }
@@ -275,10 +260,8 @@ Then('the Records Found count is greater than the number of {string} employees i
     this: CustomWorld,
     include: string
 ) {
-    const includeEmployees = includeOptions[include];
-    if (!includeEmployees) throw new Error(`Unknown Include option "${include}".`);
     const shown = await this.employeeListPage.recordsFoundCount();
-    expect(shown).toBeGreaterThan(await this.pimApi.countEmployees(includeEmployees));
+    expect(shown).toBeGreaterThan(await countFor(this, include));
 });
 
 Then('the {string} filter shows the name {string}', async function (this: CustomWorld, label: string, name: string) {

@@ -6,7 +6,6 @@ import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PersonalDetailsPage } from '../pages/PersonalDetailsPage';
 import { SystemUsersPage } from '../pages/SystemUsersPage';
-import { PimApi } from './pimApi';
 import { testEmployees } from './testData';
 
 export interface EmployeeRecord {
@@ -24,8 +23,6 @@ export class CustomWorld extends World {
     addEmployeePage!: AddEmployeePage;
     employeeListPage!: EmployeeListPage;
     systemUsersPage!: SystemUsersPage;
-    // Gọi API bằng phiên đăng nhập của trình duyệt để chuẩn bị dữ liệu (Employee List).
-    pimApi!: PimApi;
     // Bảng kết quả được ghi lại để kiểm tra không đổi (EL_16, EL_22, EL_24).
     notedResults?: { records: string; ids: string[]; searchCount: () => number };
     employeeUnderTest?: EmployeeRecord;
@@ -46,7 +43,6 @@ export class CustomWorld extends World {
         this.employeeListPage = new EmployeeListPage(page);
         this.systemUsersPage = new SystemUsersPage(page);
         this.personalDetailsPage = new PersonalDetailsPage(page);
-        this.pimApi = new PimApi(page.request);
     }
 
     // Tìm nhân viên theo Employee Id ở Employee List; chưa có (bị xoá trên demo) thì tạo lại.

@@ -16,15 +16,20 @@ export const testEmployees: Record<string, { firstName: string; lastName: string
     'AB1234': { firstName: 'Shii', lastName: 'Aoi' }
 };
 
-// Nhân viên test của Employee List (Sprint 3). Họ hiếm để tìm theo tên chỉ ra đúng một người.
-// Bị xoá, đổi tên hoặc sai trạng thái trên demo thì step chuẩn bị dữ liệu sẽ tạo lại.
-export const employeeListEmployees: Record<string, { firstName: string; lastName: string }> = {
-    // Nhân viên hiện tại (EL_02-05, EL_09).
-    '56420': { firstName: 'Shii', lastName: 'Hoshino' },
-    // Nhân viên đã nghỉ việc (EL_12).
-    '56421': { firstName: 'Shii', lastName: 'Yorukawa' },
-    // Tạo qua API trước các scenario @employee-list-data, xoá khi chạy xong (support/employeeListData.ts).
+export interface EmployeeListEmployee {
+    firstName: string;
+    lastName: string;
+    employmentStatus?: string;
+    // Tên Supervisor như hiện trong ô gợi ý.
+    supervisor?: string;
+    past?: boolean;
+}
+
+// Nhân viên test của Employee List (Sprint 3), tạo bằng UI trước các scenario @employee-list-data và xoá khi chạy xong.
+// Họ hiếm để tìm theo tên chỉ ra đúng một người. Senpai đứng trước Kouhai để có Supervisor trước khi gán.
+export const employeeListEmployees: Record<string, EmployeeListEmployee> = {
+    '56420': { firstName: 'Shii', lastName: 'Hoshino', employmentStatus: 'Full-Time Permanent' },
+    '56421': { firstName: 'Shii', lastName: 'Yorukawa', past: true },
     '56422': { firstName: 'Shii', lastName: 'Senpai' },
-    '56423': { firstName: 'Shii', lastName: 'Kouhai' },
-    '56424': { firstName: 'Shii', lastName: 'Sayonara' }
+    '56423': { firstName: 'Shii', lastName: 'Kouhai', supervisor: 'Shii Senpai' }
 };
