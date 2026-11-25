@@ -31,7 +31,7 @@ export class ReportToPage {
         await this.fieldBox('Reporting Method').locator('.oxd-select-text').click();
         await this.page.getByRole('option', { name: reportingMethod, exact: true }).click();
         await this.addForm().getByRole('button', { name: 'Save' }).click();
-        await expect(this.page.locator('.oxd-toast')).toContainText('Successfully Saved', { timeout: PAGE_LOAD_TIMEOUT });
+        await expect(this.page.locator('.oxd-toast').filter({ hasText: 'Successfully Saved' })).toBeVisible({ timeout: PAGE_LOAD_TIMEOUT });
         await expect(this.supervisorsSection().getByRole('row').filter({ hasText: name })).toHaveCount(1, { timeout: PAGE_LOAD_TIMEOUT });
     }
 }

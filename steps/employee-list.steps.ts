@@ -153,8 +153,10 @@ Then('every {string} suggestion contains {string}', async function (this: Custom
 });
 
 Then('the dropdown options include:', async function (this: CustomWorld, table: DataTable) {
-    const options = (await this.employeeListPage.dropdownOptions().allInnerTexts()).map((text) => text.trim());
-    expect(options).toEqual(expect.arrayContaining(table.raw().flat()));
+    // Danh sách có thể hiện "No Records Found" trong lúc đang tải các lựa chọn.
+    await expect
+        .poll(async () => (await this.employeeListPage.dropdownOptions().allInnerTexts()).map((text) => text.trim()))
+        .toEqual(expect.arrayContaining(table.raw().flat()));
 });
 
 Then('the dropdown options are exactly:', async function (this: CustomWorld, table: DataTable) {
